@@ -1,63 +1,90 @@
 
-with
-RandFromLast100LocalResults as (
-	select dt from (
-		SELECT dt from LocalResults 
-		order by dt desc 
-		limit 1000
-	)
-	order by RANDOM() limit 1
+with 
+raw as (
+		SELECT 
+			CAST(
+				REPLACE(名次,' ','') 
+			AS INTEGER) o,
+			馬名 h,騎師 r,練馬師 t,
+			dt
+		from LocalResults 
+		where o!=0
 )
-,RandLast1000Com as (
-	select * from LocalResults 
-	where dt=(
-		select dt from RandFromLast100LocalResults
-	)
+,RaceVar as (
+	select dt,min(o) mino, max(o) maxo, count(*) uc -- unit count
+	from raw a
+	group by a.dt
 )
-,RandPredictHistory as (
+,NorRaw as (
+	select ((maxo-o)+1) mark,*
+	from RaceVar a,raw b
+	where a.dt=b.dt
+)
+,h as (
+	select h,round(avg(mark),3) avo,count(*) c from NorRaw
+	group by h
+)
+,r as (
+	select r,round(avg(mark),3) avo,count(*) c from NorRaw
+	group by r
+)
+,t as (
+	select t,round(avg(mark),3) avo,count(*) c from NorRaw
+	group by t
+)
+,mp as ( -- bigger value, less effective
 	select 
-		a.名次,CAST(a.名次 AS INTEGER) o,a.馬名 h,a.騎師 r,a.練馬師 t,a.dt,
-		(
-			SELECT avg(o)||'_'||count(*) oc from 
-			(
-				SELECT 
-					CAST(名次 AS INTEGER) o,
-					馬名 n
-				FROM LocalResults 
-				where 1=1 
-				and dt!=a.dt
-				and 馬名=a.馬名
-			)
-		) aa,
-		(
-			SELECT avg(o)||'_'||count(*) oc from 
-			(
-				SELECT 
-					CAST(名次 AS INTEGER) o,
-					騎師 n
-				FROM LocalResults 
-				where 1=1 
-				and dt!=a.dt
-				and 騎師=a.騎師
-			)
-		) bb,
-		(
-			SELECT avg(o)||'_'||count(*) oc from 
-			(
-				SELECT 
-					CAST(名次 AS INTEGER) o,
-					練馬師 n
-				FROM LocalResults 
-				where dt!=a.dt
-				and 練馬師=a.練馬師
-			)
-		) cc
-	from 
-		RandLast1000Com a
-	order by CAST(a.名次 AS INTEGER) asc
-),
-Predicted as (
-	select * 
-	from RandPredictHistory
+	(
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				h.avo-NorRaw.mark,3 m 
+			from h,NorRaw
+			where h.h=NorRaw.h
+			group by h.h
+		)
+	) havm
+	,(
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				r.avo-NorRaw.mark,3 m 
+			from r,NorRaw
+			where r.r=NorRaw.r
+			group by r.r
+		)
+	) ravm
+	,(
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				t.avo-NorRaw.mark m 
+			from t,NorRaw
+			where t.t=NorRaw.t
+			group by t.t
+		)
+	) tavm
 )
-select * from Predicted;
+,Rand as ( -- future data as history data
+	select * from NorRaw 
+	where dt=(
+		SELECT dt from NorRaw 
+		group by dt
+		ORDER BY RANDOM()
+		limit 1
+	)
+)
+-- select * from Rand;
+select 
+	Rand.dt,
+	Rand.o,
+	((select avo from h where Rand.h=h.h)/havm)*
+	((select avo from r where Rand.r=r.r)/ravm)*
+	((select avo from t where Rand.t=t.t)/tavm) gm
+from 
+	Rand,mp
+order by dt,gm desc
+;
