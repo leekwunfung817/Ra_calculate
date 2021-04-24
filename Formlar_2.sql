@@ -2,76 +2,89 @@
 with 
 raw as (
 		SELECT 
-			dt,名次 oo,
 			CAST(
 				REPLACE(名次,' ','') 
 			AS INTEGER) o,
-			馬名 h,騎師 r,練馬師 t
+			馬名 h,騎師 r,練馬師 t,
+			dt
 		from LocalResults 
-		order by dt desc 
-		limit 1000
-)
-,raw2 as (
-	SELECT * FROM raw 
-	where o!=0
-)
-,Rand as (
-	select * from raw2 where dt=(
-		SELECT dt from raw2 
-		group by dt
-		order by dt desc 
-		limit 1
-	)
+		where o!=0
 )
 ,RaceVar as (
-	select min(o) mino, max(o) maxo, count(*) uc -- unit count
-	from Rand 
-	group by dt
+	select dt,min(o) mino, max(o) maxo, count(*) uc -- unit count
+	from raw a
+	group by a.dt
+)
+,NorRaw as (
+	select ((maxo-o)+1) mark,*
+	from RaceVar a,raw b
+	where a.dt=b.dt
 )
 ,h as (
-	select h,avg(o) avo,count(*) c from raw2
+	select h,round(avg(mark),3) avo,count(*) c from NorRaw
 	group by h
-	order by avo asc
 )
 ,r as (
-	select r,avg(o) avo,count(*) c from raw2
+	select r,round(avg(mark),3) avo,count(*) c from NorRaw
 	group by r
-	order by avo asc
 )
 ,t as (
-	select t,avg(o) avo,count(*) c from raw2
+	select t,round(avg(mark),3) avo,count(*) c from NorRaw
 	group by t
-	order by avo asc
 )
-,mp as (
+,mp as ( -- bigger value, less effective
 	select 
 	(
-		select avg(m) havm from (
-			select h.h,avg(avo- ((maxo-o)/(o-mino)) ) m from h,raw2
-			where h.h=raw2.h
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				h.avo-NorRaw.mark,3 m 
+			from h,NorRaw
+			where h.h=NorRaw.h
 			group by h.h
-			order by m desc
 		)
-	) havm,
-	(
-		select avg(m) from (
-			select r.r,avg(avo- ((maxo-o)/(o-mino)) ) m from r,raw2
-			where r.r=raw2.r
+	) havm
+	,(
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				r.avo-NorRaw.mark,3 m 
+			from r,NorRaw
+			where r.r=NorRaw.r
 			group by r.r
-			order by m desc
 		)
-	) ravm,
-	(
-		select avg(m) havm from (
-			select t.t,avg(avo- ((maxo-o)/(o-mino)) ) m from t,raw2,RaceVar
-			where t.t=raw2.t and RaceVar.dt=raw2.dt
+	) ravm
+	,(
+		select 
+			avg(case when m<0 then m*-1 else m end)
+		from (
+			select 
+				t.avo-NorRaw.mark m 
+			from t,NorRaw
+			where t.t=NorRaw.t
 			group by t.t
-			order by m desc
 		)
 	) tavm
 )
-select Rand.dt,Rand.o,(h.avo/havm)*(r.avo/ravm)*(t.avo/tavm) gm 
-from Rand,h,r,t,mp
-where Rand.h=h.h and Rand.r=r.r and Rand.t=t.t
-order by o
+,Rand as ( -- future data as history data
+	select * from NorRaw 
+	where dt=(
+		SELECT dt from NorRaw 
+		group by dt
+		ORDER BY RANDOM()
+		limit 1
+	)
+)
+-- select * from Rand;
+select 
+	Rand.dt,
+	Rand.o,
+	((select avo from h where Rand.h=h.h)/havm)*
+	((select avo from r where Rand.r=r.r)/ravm)*
+	((select avo from t where Rand.t=t.t)/tavm) gm
+from 
+	Rand,mp
+order by dt,gm desc
 ;
