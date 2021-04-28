@@ -70,21 +70,36 @@ raw as (
 )
 ,Rand as ( -- future data as history data
 	select * from NorRaw 
-	where dt=(
+	where dt = (
 		SELECT dt from NorRaw 
 		group by dt
 		ORDER BY RANDOM()
 		limit 1
 	)
 )
--- select * from Rand;
+,result1 as (
+	-- select * from Rand;
+	select 
+		Rand.dt,
+		Rand.o,
+		Rand.h,Rand.r,Rand.t,
+		(select avo from h where Rand.h=h.h) havo,
+		(select avo from r where Rand.r=r.r) ravo,
+		(select avo from t where Rand.t=t.t) tavo,
+		havm,ravm,tavm,
+		(select c from h where Rand.h=h.h) hc,
+		(select c from r where Rand.r=r.r) rc,
+		(select c from t where Rand.t=t.t) tc
+	from 
+		Rand,mp
+	group by dt,h
+)
 select 
-	Rand.dt,
-	Rand.o,
-	((select avo from h where Rand.h=h.h)/havm)*
-	((select avo from r where Rand.r=r.r)/ravm)*
-	((select avo from t where Rand.t=t.t)/tavm) gm
-from 
-	Rand,mp
-order by dt,gm desc
-;
+	substr(dt,35,45) dts,o,
+	h,r,t,
+	havo*ravo*tavo gm,
+	(havo/havm)*(ravo/ravm)*(tavo/tavm) egm,
+	hc+rc+tc confident
+from result1 
+order by dt desc ,gm desc
+-- ,result2 as ( select (havo/havm)*(ravo/ravm)*(tavo/tavm) gm from result1 order by dt,gm desc );
