@@ -39,7 +39,7 @@ raw as (
 			avg(case when m<0 then m*-1 else m end)
 		from (
 			select 
-				h.avo-NorRaw.mark,3 m 
+				(h.avo-NorRaw.mark) m 
 			from h,NorRaw
 			where h.h=NorRaw.h
 			group by h.h
@@ -50,7 +50,7 @@ raw as (
 			avg(case when m<0 then m*-1 else m end)
 		from (
 			select 
-				r.avo-NorRaw.mark,3 m 
+				(r.avo-NorRaw.mark) m 
 			from r,NorRaw
 			where r.r=NorRaw.r
 			group by r.r
@@ -61,7 +61,7 @@ raw as (
 			avg(case when m<0 then m*-1 else m end)
 		from (
 			select 
-				t.avo-NorRaw.mark m 
+				(t.avo-NorRaw.mark) m 
 			from t,NorRaw
 			where t.t=NorRaw.t
 			group by t.t
@@ -81,7 +81,7 @@ raw as (
 	-- select * from Rand;
 	select 
 		Rand.dt,
-		Rand.o,
+		-- Rand.o,
 		Rand.h,Rand.r,Rand.t,
 		(select avo from h where Rand.h=h.h) havo,
 		(select avo from r where Rand.r=r.r) ravo,
@@ -95,7 +95,8 @@ raw as (
 	group by dt,h
 )
 select 
-	substr(dt,35,45) dts,o,
+	dt,
+	--o,
 	h,r,t,
 	havo*ravo*tavo gm,
 	(havo/havm)*(ravo/ravm)*(tavo/tavm) egm,
