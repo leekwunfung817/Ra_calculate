@@ -28,13 +28,21 @@ Rand as (
 		Rand
 	group by Rand.dt,Rand.h
 )
+,result2 as (
 select 
 	dt,
 	raceno,
 	h,r,t,
-	havo*ravo*tavo gm,
 	(havo/havm)*(ravo/ravm)*(tavo/tavm) egm,
-	hc+rc+tc confident
+	hc+rc+tc confident,
+	-- havo*ravo*tavo,
+	havo*ravo*tavo gm,
+	(havo/havm) hav,
+	(ravo/ravm) rav,
+	(tavo/tavm) tav,
+	hc,rc,tc
 from result1 
-order by dt desc,raceno asc,gm desc
+)
+select * from result2
+order by dt desc,raceno asc,egm desc
 ;
