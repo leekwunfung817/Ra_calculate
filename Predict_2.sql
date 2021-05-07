@@ -30,19 +30,19 @@ Rand as (
 )
 ,result2 as (
 select 
-	dt,
-	raceno,
-	h,r,t,
-	(havo/havm)*(ravo/ravm)*(tavo/tavm) egm,
-	hc+rc+tc confident,
+	dt 日期,
+	raceno 埸次,
+	h 馬,r 騎師,t 訓練師,
+	(havo/havm)*(ravo/ravm)*(tavo/tavm) 比例勝率,
+	havo*ravo*tavo 平算勝率,
+	hc+rc+tc 準確率信心,
 	-- havo*ravo*tavo,
-	havo*ravo*tavo gm,
-	(havo/havm) hav,
-	(ravo/ravm) rav,
-	(tavo/tavm) tav,
-	hc,rc,tc
+	(havo/havm) 馬勝率,
+	(ravo/ravm) 騎師勝率,
+	(tavo/tavm) 訓練師勝率,
+	hc 馬準確率信心,rc 騎師準確率信心,tc 訓練師準確率信心
 from result1 
 )
 select * from result2
-order by dt desc,raceno asc,egm desc
+order by 日期 desc,埸次 asc,比例勝率 desc
 ;
