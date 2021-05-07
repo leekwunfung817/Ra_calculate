@@ -13,7 +13,7 @@ Rand as (
 ,result1 as (
 	select 
 		Rand.dt,
-		raceno,
+		raceno+0 raceno,
 		Rand.h,Rand.r,Rand.t,
 		IFNULL((select avo from h where h.h like '%'||Rand.h||'%'),0) havo,
 		IFNULL((select avo from r where r.r like '%'||Rand.r||'%'),0) ravo,
