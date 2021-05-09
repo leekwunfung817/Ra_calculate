@@ -3,7 +3,7 @@ delete from Cache where `key`='havm';
 insert into Cache
 select 
 	'havm' ke,
-	avg(case when m<0 then m*-1 else m end) val
+	1-avg(case when m<0 then m*-1 else m end) val
 from (
 	select 
 		(h.avo-NorRaw.mark) m
@@ -16,7 +16,7 @@ delete from Cache where `key`='ravm';
 insert into Cache
 select 
 	'ravm' ke,
-	avg(case when m<0 then m*-1 else m end) val
+	1-avg(case when m<0 then m*-1 else m end) val
 from (
 	select 
 		(r.avo-NorRaw.mark) m 
@@ -29,7 +29,7 @@ delete from Cache where `key`='tavm';
 insert into Cache
 select 
 	'tavm' ke,
-	avg(case when m<0 then m*-1 else m end) val
+	1-avg(case when m<0 then m*-1 else m end) val
 from (
 	select 
 		(t.avo-NorRaw.mark) m 
