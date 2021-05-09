@@ -12,8 +12,9 @@ raw as (
 			(排位體重-實際負磅)*1.0 rww,-- rider with weight
 			完成時間 ct -- complete time
 			,( substr(完成時間, 0, instr(完成時間, ':') ) *60)  + (substr(完成時間, instr(完成時間, ':')+1, length(完成時間)-1)) dursec
-			,獨贏賠率*1.0 wb, -- win bounis
-			dt
+			,獨贏賠率*1.0 wb -- win bounis
+			,檔位*1.0 p
+			,dt
 		from LocalResults 
 		where o!=0
 )
@@ -26,6 +27,7 @@ raw as (
 		,min(rw) minrw,max(rw) maxrw
 		,min(wb) minwb,max(wb) maxwb
 		,min(dursec) mindursec,max(dursec) maxdursec
+		,min(p) minp,max(p) maxp
 	from raw a
 	group by a.dt
 )
@@ -38,6 +40,7 @@ select
 	,(rww-minrww)/(maxrww-minrww) rww
 	,(wb-minwb)/(maxwb-minwb) wb
 	,(dursec-mindursec)/(maxdursec-mindursec) ndursec
+	,(p-minp)/(maxp-minp) p
 	,dursec
 from raw b,RaceVar a
 where a.dt=b.dt
