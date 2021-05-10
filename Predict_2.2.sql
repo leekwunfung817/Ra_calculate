@@ -48,6 +48,8 @@ CREATE TABLE preventnull as
 	group by dt,raceno
 ;
 
+DROP TABLE IF EXISTS result4;
+CREATE TABLE result4 as 
 with
 result2 as (
 	select 
