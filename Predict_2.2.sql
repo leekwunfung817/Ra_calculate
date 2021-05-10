@@ -28,6 +28,9 @@ with
 		IFNULL((select c from h where h.h like '%'||Rand.h||'%'),0) hc,
 		IFNULL((select c from r where r.r like '%'||Rand.r||'%'),0) rc,
 		IFNULL((select c from t where t.t like '%'||Rand.t||'%'),0) tc,
+		(select value from Cache where `key`='wb') wbef,
+		(select value from Cache where `key`='rw') rwef,
+		(select value from Cache where `key`='p') pef,
 		wb*1.0 wb,
 		rw*1.0 rw,
 		p*1.0 p
@@ -53,12 +56,12 @@ CREATE TABLE result2 as
 	select 
 		result1.dt,result1.raceno
 		,h,r,t
-		,(case when havo=0 then (ahavo) else havo end) havo
-		,(case when ravo=0 then (aravo) else ravo end) ravo
-		,(case when tavo=0 then (atavo) else tavo end) tavo
-		,(1-((wb-minwb)/(maxwb-minwb))) wb
-		,(rw-minrw)/(maxrw-minrw) rw
-		,1-(p-minp)/(maxp-minp) p
+		,(case when havo=0 then (ahavo) else havo end)*havm havo
+		,(case when ravo=0 then (aravo) else ravo end)*ravm ravo
+		,(case when tavo=0 then (atavo) else tavo end)*tavm tavo
+		,(1-((wb-minwb)/(maxwb-minwb)))*wbef wb
+		,(rw-minrw)/(maxrw-minrw)*rwef rw
+		,1-(p-minp)/(maxp-minp)*pef p
 		,havm,ravm,tavm
 		,hc,rc,tc
 	from result1,preventnull
@@ -70,13 +73,15 @@ CREATE TABLE result3 as
 	select 
 		dt 日期,
 		raceno 埸次,
-		h 馬,r 騎師,t 訓練師,
-		round(p,3) 排位勝率,
-		round(case when rw=0 then 0.1 else rw end,4) 馬負磅勝率,
-		round(case when wb=0 then 0.1 else wb end,4) 賠率勝率,
-		round(havo,4) 馬勝率,
-		round(ravo,4) 騎師勝率,
-		round(tavo,4) 訓練師勝率
+		h 馬,
+		havo 馬勝率,
+		r 騎師,
+		ravo 騎師勝率,
+		t 訓練師,
+		tavo 訓練師勝率,
+		p 排位勝率,
+		rw 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
+		wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
 	from result2
 ;
 
@@ -85,20 +90,25 @@ DROP TABLE IF EXISTS result4;
 CREATE TABLE result4 as 
 	select 
 		*,
-		round((馬勝率+騎師勝率+訓練師勝率),4) 排名比例勝率_加
-		--,round(馬勝率*騎師勝率*訓練師勝率,4) 排名比例勝率_乘
+		((馬勝率+騎師勝率+訓練師勝率)/3) 單位綜合勝率,
+		((賠率勝率+馬負磅勝率+排位勝率)) 臨埸比例勝率,
+		((馬負磅勝率+排位勝率)) 非人為臨埸比例勝率
 	from result3
 ;
 
 DROP TABLE IF EXISTS result5;
 CREATE TABLE result5 as 
 select
-	*,
-	round(排名比例勝率_加*馬負磅勝率*排位勝率,4) 非人為綜合勝率,
-	round(排名比例勝率_加*賠率勝率*馬負磅勝率*排位勝率,4) 綜合勝率
-	--,round(排名比例勝率_乘*賠率勝率*馬負磅勝率*排位勝率,4) 綜合勝率_乘
+	日期,埸次,馬,騎師,訓練師
+	,round((單位綜合勝率+臨埸比例勝率),4) 綜合勝率
+	,round((單位綜合勝率+非人為臨埸比例勝率),4) 非人為綜合勝率
+	,round(單位綜合勝率,4) 單位綜合勝率,round(臨埸比例勝率,4) 臨埸比例勝率,round(非人為臨埸比例勝率,4) 非人為臨埸比例勝率
+	,round(排位勝率,4) 排位勝率,round(馬負磅勝率,4) 馬負磅勝率,round(賠率勝率,4) 賠率勝率
+	,round(馬勝率,4) 馬勝率,round(騎師勝率,4) 騎師勝率,round(訓練師勝率,4) 訓練師勝率
 from result4
-order by 日期 desc,埸次 asc,非人為綜合勝率 desc,綜合勝率 desc
+where 埸次 in (4,5,6)
+order by 日期 desc,埸次 asc,綜合勝率 desc
 ;
 
+select * from result5;
 commit;
