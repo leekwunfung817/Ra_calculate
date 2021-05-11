@@ -114,22 +114,24 @@ where 埸次 in (4,5,6)
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 
+DROP TABLE IF EXISTS result6;
+CREATE TABLE result6 as 
 select
 	日期,埸次
 	,馬
-	,馬勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,馬勝率 desc)) 馬勝率
+	,馬勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬勝率 desc)) 馬勝率
 	,騎師
-	,騎師勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,騎師勝率 desc)) 騎師勝率
+	,騎師勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師勝率 desc)) 騎師勝率
 	,訓練師
-	,訓練師勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,訓練師勝率 desc)) 訓練師勝率
-	,綜合勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,綜合勝率 desc)) 綜合勝率
-	,臨埸勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,臨埸勝率 desc)) 臨埸勝率
-	,單位勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,單位勝率 desc)) 單位勝率
-	,排位勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,排位勝率 desc)) 排位勝率
-	,馬負磅勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,馬負磅勝率 desc)) 馬負磅勝率
-	,賠率綜合勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,賠率綜合勝率 desc)) 賠率綜合勝率
-	,賠率臨埸勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,賠率臨埸勝率 desc)) 賠率臨埸勝率
-	,賠率勝率||'>'||(ROW_NUMBER () OVER (ORDER BY 日期 desc,埸次 asc,賠率勝率 desc)) 賠率勝率
+	,訓練師勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 訓練師勝率 desc)) 訓練師勝率
+	,綜合勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率
+	,臨埸勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 臨埸勝率 desc)) 臨埸勝率
+	,單位勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 單位勝率 desc)) 單位勝率
+	,排位勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 排位勝率 desc)) 排位勝率
+	,馬負磅勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬負磅勝率 desc)) 馬負磅勝率
+	,賠率綜合勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率綜合勝率 desc)) 賠率綜合勝率
+	,賠率臨埸勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率臨埸勝率 desc)) 賠率臨埸勝率
+	,賠率勝率||'>'||(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率勝率 desc)) 賠率勝率
 from result5
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 commit;
