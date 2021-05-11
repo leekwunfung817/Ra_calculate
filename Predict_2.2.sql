@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS result4;
 CREATE TABLE result4 as 
 	select 
 		*,
-		((馬勝率+騎師勝率+訓練師勝率)/3) 單位綜合勝率,
+		((馬勝率+騎師勝率+訓練師勝率)) 單位綜合勝率,
 		((賠率勝率+馬負磅勝率+排位勝率)) 臨埸比例勝率,
 		((馬負磅勝率+排位勝率)) 非人為臨埸勝率
 	from result3
