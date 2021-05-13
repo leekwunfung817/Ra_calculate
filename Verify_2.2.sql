@@ -6,17 +6,17 @@ with
 	Rand as (
 		select 
 			REPLACE(名次,' ','')*1 o,
+			(substr(dt, 0, instr(dt, '_'))) dt,
 			(substr(dt, instr(dt, '_')+1, length(dt)-1))*1 raceno,
-			馬名 h,
-			騎師 r,
-			練馬師 t,
+			case when instr(馬名, '(')>=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
+			case when instr(騎師, '(')>=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
+			case when instr(練馬師, '(')>=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
 			b.*,
 			獨贏賠率 wb,
 			實際負磅 rw,
 			檔位 p
 		from LocalResults b
 		where raceno in (4,5,6)
-		--where dt=(select dt from LocalResults order by dt desc limit 1)
 	)
 	select 
 		o,
@@ -40,7 +40,7 @@ with
 		p*1.0 p
 	from 
 		Rand
-	group by Rand.dt,Rand.h
+	group by dt,h
 ;
 
 DROP TABLE IF EXISTS preventnull;
@@ -123,7 +123,9 @@ order by 日期 desc,埸次 asc,綜合勝率 desc;
 DROP TABLE IF EXISTS verify6;
 CREATE TABLE verify6 as 
 select
-	o,日期,埸次
+	o
+	,日期,埸次
+	,日期 dt,埸次 raceno
 	,馬
 	,馬勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬勝率 desc)) rank1
 	,騎師
@@ -178,5 +180,127 @@ union select '賠率臨埸勝率',賠率臨埸勝率 from verify7
 union select '賠率勝率',賠率勝率 from verify7
 ) order by accuracy desc
 ;
+
+
+
+DROP TABLE IF EXISTS verify7_2;
+CREATE TABLE verify7_2 as 
+with
+dtList as (select count(*) dtc from verify1 group by dt),
+accuracy as (
+	select 
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank1<=topnum group by dt,raceno))/dtc 馬勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank2<=topnum group by dt,raceno))/dtc 騎師勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank3<=topnum group by dt,raceno))/dtc 訓練師勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank4<=topnum group by dt,raceno))/dtc 綜合勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank5<=topnum group by dt,raceno))/dtc 臨埸勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank6<=topnum group by dt,raceno))/dtc 單位勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank7<=topnum group by dt,raceno))/dtc 排位勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank8<=topnum group by dt,raceno))/dtc 馬負磅勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank9<=topnum group by dt,raceno))/dtc 賠率綜合勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank10<=topnum group by dt,raceno))/dtc 賠率臨埸勝率,
+		(select sum(wc) from (select (count(*)*1.0) wc from verify6 where o<=topnum and rank11<=topnum group by dt,raceno))/dtc 賠率勝率
+	from (select count(*)*3.0 dtc,4 topnum from dtList)
+)
+select * from accuracy
+;
+DROP TABLE IF EXISTS verify8_2;
+CREATE TABLE verify8_2 as 
+select * from (
+select '馬勝率' name,馬勝率 accuracy from verify7_2
+union select '騎師勝率',騎師勝率 from verify7_2
+union select '訓練師勝率',訓練師勝率 from verify7_2
+union select '綜合勝率',綜合勝率 from verify7_2
+union select '臨埸勝率',臨埸勝率 from verify7_2
+union select '單位勝率',單位勝率 from verify7_2
+union select '排位勝率',排位勝率 from verify7_2
+union select '馬負磅勝率',馬負磅勝率 from verify7_2
+union select '賠率綜合勝率',賠率綜合勝率 from verify7_2
+union select '賠率臨埸勝率',賠率臨埸勝率 from verify7_2
+union select '賠率勝率',賠率勝率 from verify7_2
+) order by accuracy desc
+;
+
+DROP TABLE IF EXISTS verify7_3;
+CREATE TABLE verify7_3 as 
+with
+dtList as (select count(*) dtc from verify1 group by dt),
+accuracy as (
+	select 
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank1 wc from verify6 where o<=topnum and rank1<=topnum group by dt,raceno))) 馬勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank2 wc from verify6 where o<=topnum and rank2<=topnum group by dt,raceno))) 騎師勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank3 wc from verify6 where o<=topnum and rank3<=topnum group by dt,raceno))) 訓練師勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank4 wc from verify6 where o<=topnum and rank4<=topnum group by dt,raceno))) 綜合勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank5 wc from verify6 where o<=topnum and rank5<=topnum group by dt,raceno))) 臨埸勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank6 wc from verify6 where o<=topnum and rank6<=topnum group by dt,raceno))) 單位勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank7 wc from verify6 where o<=topnum and rank7<=topnum group by dt,raceno))) 排位勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank8 wc from verify6 where o<=topnum and rank8<=topnum group by dt,raceno))) 馬負磅勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank9 wc from verify6 where o<=topnum and rank9<=topnum group by dt,raceno))) 賠率綜合勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank10 wc from verify6 where o<=topnum and rank10<=topnum group by dt,raceno))) 賠率臨埸勝率,
+		(select avg(wc) from (select (case when wc<0 then wc*-1 else wc end) wc from (select o-rank11 wc from verify6 where o<=topnum and rank11<=topnum group by dt,raceno))) 賠率勝率
+	from (select 100 topnum from dtList)
+)
+select * from accuracy
+;
+
+DROP TABLE IF EXISTS verify8_3;
+CREATE TABLE verify8_3 as 
+select * from (
+select '馬勝率' Name,馬勝率 DifferenceRates from verify7_3
+union select '騎師勝率',騎師勝率 from verify7_3
+union select '訓練師勝率',訓練師勝率 from verify7_3
+union select '綜合勝率',綜合勝率 from verify7_3
+union select '臨埸勝率',臨埸勝率 from verify7_3
+union select '單位勝率',單位勝率 from verify7_3
+union select '排位勝率',排位勝率 from verify7_3
+union select '馬負磅勝率',馬負磅勝率 from verify7_3
+union select '賠率綜合勝率',賠率綜合勝率 from verify7_3
+union select '賠率臨埸勝率',賠率臨埸勝率 from verify7_3
+union select '賠率勝率',賠率勝率 from verify7_3
+) order by DifferenceRates asc
+;
+
+
+
+
+DROP TABLE IF EXISTS verify7_4;
+CREATE TABLE verify7_4 as 
+with
+dtList as (select count(*) dtc from verify1 group by dt),
+accuracy as (
+	select 
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank1 wc from verify6 where o<=topnum and rank1<=topnum group by dt,raceno))) 馬勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank2 wc from verify6 where o<=topnum and rank2<=topnum group by dt,raceno))) 騎師勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank3 wc from verify6 where o<=topnum and rank3<=topnum group by dt,raceno))) 訓練師勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank4 wc from verify6 where o<=topnum and rank4<=topnum group by dt,raceno))) 綜合勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank5 wc from verify6 where o<=topnum and rank5<=topnum group by dt,raceno))) 臨埸勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank6 wc from verify6 where o<=topnum and rank6<=topnum group by dt,raceno))) 單位勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank7 wc from verify6 where o<=topnum and rank7<=topnum group by dt,raceno))) 排位勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank8 wc from verify6 where o<=topnum and rank8<=topnum group by dt,raceno))) 馬負磅勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank9 wc from verify6 where o<=topnum and rank9<=topnum group by dt,raceno))) 賠率綜合勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank10 wc from verify6 where o<=topnum and rank10<=topnum group by dt,raceno))) 賠率臨埸勝率,
+		(select min(wc)||'.'||avg(wc)||'.'||max(wc)||'_'||(max(wc)-min(wc)) from ((select o-rank11 wc from verify6 where o<=topnum and rank11<=topnum group by dt,raceno))) 賠率勝率
+	from (select 100 topnum from dtList)
+)
+select * from accuracy
+;
+
+DROP TABLE IF EXISTS verify8_4;
+CREATE TABLE verify8_4 as 
+select * from (
+select '馬勝率' Name,馬勝率 DifferenceRates from verify7_4
+union select '騎師勝率',騎師勝率 from verify7_4
+union select '訓練師勝率',訓練師勝率 from verify7_4
+union select '綜合勝率',綜合勝率 from verify7_4
+union select '臨埸勝率',臨埸勝率 from verify7_4
+union select '單位勝率',單位勝率 from verify7_4
+union select '排位勝率',排位勝率 from verify7_4
+union select '馬負磅勝率',馬負磅勝率 from verify7_4
+union select '賠率綜合勝率',賠率綜合勝率 from verify7_4
+union select '賠率臨埸勝率',賠率臨埸勝率 from verify7_4
+union select '賠率勝率',賠率勝率 from verify7_4
+) order by DifferenceRates desc
+;
+
 
 commit;
