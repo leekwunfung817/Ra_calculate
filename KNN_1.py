@@ -3,7 +3,7 @@ from KNN_1_data import result,data,predict
 command = '''
 
 pip3 install sklearn==0.0
-cd C:/Users/ivan.lee.PRIMECREATION/Documents/ivan/Projects source/Others/h/Ra_deploy/Script/Python
+cd "C:/Users/ivan.lee.PRIMECREATION/Documents/ivan/Projects source/Others/h/Ra_calculate"
 python3 KNN_1.py
 
 

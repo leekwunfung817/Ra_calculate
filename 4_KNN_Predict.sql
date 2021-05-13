@@ -16,6 +16,7 @@ raw as (
 		from RaceCard b
 		where 1=1
 		and dt=(select dt from RaceCard order by dt desc limit 1)
+		and raceno in (4,5,6)
 )
 ,raw1 as (
 	SELECT

@@ -6,7 +6,7 @@ with
 	Rand as (
 		select 
 			REPLACE(名次,' ','')*1 o,
-			(substr(dt, instr(dt, '_')+1, length(dt)-1)) raceno,
+			(substr(dt, instr(dt, '_')+1, length(dt)-1))*1 raceno,
 			馬名 h,
 			騎師 r,
 			練馬師 t,
@@ -15,6 +15,7 @@ with
 			實際負磅 rw,
 			檔位 p
 		from LocalResults b
+		where raceno in (4,5,6)
 		--where dt=(select dt from LocalResults order by dt desc limit 1)
 	)
 	select 
@@ -146,18 +147,18 @@ with
 dtList as (select count(*) dtc from verify1 group by dt),
 accuracy as (
 	select 
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank1<=topnum) 馬勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank2<=topnum) 騎師勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank3<=topnum) 訓練師勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank4<=topnum) 綜合勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank5<=topnum) 臨埸勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank6<=topnum) 單位勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank7<=topnum) 排位勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank8<=topnum) 馬負磅勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank9<=topnum) 賠率綜合勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank10<=topnum) 賠率臨埸勝率,
-		(select (count(*)*1.0)/(dtc) from verify6 where o<=topnum and rank11<=topnum) 賠率勝率
-	from (select count(*)*4 dtc,4 topnum from dtList)
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank1<=topnum) 馬勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank2<=topnum) 騎師勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank3<=topnum) 訓練師勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank4<=topnum) 綜合勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank5<=topnum) 臨埸勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank6<=topnum) 單位勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank7<=topnum) 排位勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank8<=topnum) 馬負磅勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank9<=topnum) 賠率綜合勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank10<=topnum) 賠率臨埸勝率,
+		(select (count(*)*1.0)/(dtc*topnum) from verify6 where o<=topnum and rank11<=topnum) 賠率勝率
+	from (select count(*) dtc,4 topnum from dtList)
 )
 select * from accuracy
 ;
