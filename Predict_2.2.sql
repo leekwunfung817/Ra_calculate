@@ -1,5 +1,100 @@
+-- Normalise history data
+DROP TABLE IF EXISTS NorRaw; -- calculate the whole race
+CREATE TABLE NorRaw AS
+with 
+raw as (
+		SELECT 
+			LocalResults.dt,
+			CAST( REPLACE(名次,' ','') AS INTEGER ) o,
+			馬名 h,騎師 r,練馬師 t,
+			實際負磅*1.0 rw,-- real weight (just horse)
+			排位體重*1.0 cw,-- comparitive weight (horse with rider and wearing)
+			(排位體重-實際負磅)*1.0 rww,-- rider with weight
+			完成時間 ct -- complete time
+			,((substr(完成時間,0,instr(完成時間,':'))*60)+(substr(完成時間, instr(完成時間, ':')+1,length(完成時間)-1)))*1.0 dursec
+			,meters*1.0 meters
+			,獨贏賠率*1.0 wb -- win bounis
+			,檔位*1.0 p
+		from LocalResults, LocalResultsComInfo
+		where o!=0 and LocalResults.dt=LocalResultsComInfo.dt
+)
+,RaceVar as (
+	select 
+		dt
+		,min(o)*1.0 mino, max(o)*1.0 maxo, count(*) uc -- unit count
+		,min(rww) minrww, max(rww) maxrww -- rider with waering
+		,min(cw) mincw,max(cw) maxcw
+		,min(rw) minrw,max(rw) maxrw
+		,min(wb) minwb,max(wb) maxwb
+		,min(dursec) mindursec,max(dursec) maxdursec
+		,min(p) minp,max(p) maxp
+	from raw a
+	group by a.dt
+)
+select 
+	a.dt
+	,o
+	,h,r,t
+	,(b.meters/dursec) mark --speed mark
+	,(rw-minrw)/(maxrw-minrw) rw
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY rw desc)) rwrank
+	,(cw-mincw)/(maxcw-mincw) cw
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY cw desc)) cwrank
+	,(rww-minrww)/(maxrww-minrww) rww
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY rww desc)) rwwrank
+	,(wb-minwb)/(maxwb-minwb) wb
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY wb asc)) wbrank
+	,(dursec-mindursec)/(maxdursec-mindursec) ndursec
+	,(p-minp)/(maxp-minp) p
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY p asc)) prank
+	,b.meters,dursec
+from raw b,RaceVar a
+where a.dt=b.dt
+order by b.dt desc,o asc
+;
 
+-- unit data cache
+DROP TABLE IF EXISTS h; CREATE TABLE h as select h,avg(mark) avo,count(*) c from NorRaw group by h;
+DROP TABLE IF EXISTS r; CREATE TABLE r as select r,avg(mark) avo,count(*) c from NorRaw group by r;
+DROP TABLE IF EXISTS t; CREATE TABLE t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
 
+-- rate effectiveness
+delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
+	1-avg(case when m<0 then m*-1 else m end) val from 
+	(select (h.avo-NorRaw.mark) m from h,NorRaw where h.h=NorRaw.h group by h.h);
+delete from Cache where `key`='ravm'; insert into Cache select 'ravm' ke,
+	1-avg(case when m<0 then m*-1 else m end) val from 
+	(select (r.avo-NorRaw.mark) m from r,NorRaw	where r.r=NorRaw.r group by r.r);
+delete from Cache where `key`='tavm'; insert into Cache select 'tavm' ke,
+	1-avg(case when m<0 then m*-1 else m end) val from 
+	(select (t.avo-NorRaw.mark) m from t,NorRaw	where t.t=NorRaw.t group by t.t);
+delete from Cache where `key`='wb'; insert into Cache select 'wb' ke,(with  
+	L as (select dt,h,r,t,mark,wb ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='rw'; insert into Cache select 'rw' ke,(with  
+	L as (select dt,h,r,t,mark,rw ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='cw'; insert into Cache select 'cw' ke,(with  
+	L as (select dt,h,r,t,mark,cw ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='rww'; insert into Cache select 'rww' ke,(with  
+	L as (select dt,h,r,t,mark,rww ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='p';insert into Cache select 'p' ke,(with  
+	L as (select dt,h,r,t,mark,p ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+
+-- calculation begin - data preprocess
 DROP TABLE IF EXISTS result1;
 CREATE TABLE result1 as 
 with
@@ -42,6 +137,7 @@ with
 	group by Rand.dt,Rand.h
 ;
 
+-- Prepare for normalization
 DROP TABLE IF EXISTS preventnull;
 CREATE TABLE preventnull as 
 	select 
@@ -54,6 +150,7 @@ CREATE TABLE preventnull as
 	group by dt,raceno
 ;
 
+-- normalization
 DROP TABLE IF EXISTS result2;
 CREATE TABLE result2 as 
 	select 
@@ -71,6 +168,7 @@ CREATE TABLE result2 as
 	where preventnull.dt=result1.dt and result1.raceno=preventnull.raceno
 ;
 
+-- naming and translation
 DROP TABLE IF EXISTS result3;
 CREATE TABLE result3 as 
 	select 
@@ -88,7 +186,7 @@ CREATE TABLE result3 as
 	from result2
 ;
 
-
+-- first integrate various kinds of rate
 DROP TABLE IF EXISTS result4;
 CREATE TABLE result4 as 
 	select 
@@ -99,6 +197,7 @@ CREATE TABLE result4 as
 	from result3
 ;
 
+-- second integrate various kinds of rate
 DROP TABLE IF EXISTS result5;
 CREATE TABLE result5 as 
 select
@@ -116,7 +215,7 @@ from result4
 where 埸次 in (4,5,6)
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
-
+-- ranking sorting and indication
 DROP TABLE IF EXISTS result6;
 CREATE TABLE result6 as 
 select
