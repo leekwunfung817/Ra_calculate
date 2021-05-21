@@ -62,53 +62,94 @@ DROP TABLE IF EXISTS r; CREATE TABLE r as select r,avg(mark) avo,count(*) c from
 DROP TABLE IF EXISTS t; CREATE TABLE t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
 
 --上名率
-DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS select h,count(o)*1.0/(select count(*) from NorRaw b where a.h=b.h) c,(select count(*) from NorRaw b where a.h=b.h) a from NorRaw a where o in (1,2,3) group by h order by c desc;
-DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS select r,count(o)*1.0/(select count(*) from NorRaw b where a.r=b.r) c,(select count(*) from NorRaw b where a.r=b.r) a from NorRaw a where o in (1,2,3) group by r order by c desc;
-DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS select t,count(o)*1.0/(select count(*) from NorRaw b where a.t=b.t) c,(select count(*) from NorRaw b where a.t=b.t) a from NorRaw a where o in (1,2,3) group by r order by c desc;
-
+DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
+WITH 
+a as (select h,count(*) a from NorRaw group by h)
+,c as (select h,count(*) c from NorRaw where o >=3 group by h)
+select a.h,c*1.0/a a from a,c where a.h=c.h
+;
+DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
+WITH 
+a as (select r,count(*) a from NorRaw group by r)
+,c as (select r,count(*) c from NorRaw where o >=3 group by r)
+select a.r,c*1.0/a a from a,c where a.r=c.r
+;
+DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
+WITH 
+a as (select t,count(*) a from NorRaw group by t)
+,c as (select t,count(*) c from NorRaw where o >=3 group by t)
+select a.t,c*1.0/a a from a,c where a.t=c.t
+;
 
 -- rate effectiveness
 with
 effectivenessRates as (
 	select
 		(
-			--  speed dif of - a horse in dif length of race
-			with 
-			ana as ( select h ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) 
-			select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+			with ana as ( select h ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
 		) havm, (
-			--  speed dif of - a rider in dif length of race
-			with 
-			ana as ( select r ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) 
-			select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+			with ana as ( select r ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
 		) ravm, (
-			--  speed dif of - a horse in dif length of race
-			with 
-			ana as ( select t ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) 
-			select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+			with ana as ( select t ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
 		) tavm, (
-			with 
-			ana as ( select wb ke1,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1 ) 
-			select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
-		) wb
+			with ana as ( select h ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw where o<=3 group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) h3t, (
+			with ana as ( select r ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw where o<=3 group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) r3t, (
+			with ana as ( select t ke1, meters ke2,(max(mark)-min(mark)) dif, count(*) c from NorRaw where o<=3 group by ke1,ke2 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) t3t, (
+			with ana as ( select wb ke1,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) wb, (
+			with ana as ( select rw ke1,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) rw, (
+			with ana as ( select rww ke1,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) rww, (
+			with ana as ( select p ke1,(max(mark)-min(mark)) dif, count(*) c from NorRaw group by ke1 ) select ((min(dif)+avg(dif)+max(dif))/3) ef from ana where c>1
+		) p
 )
 ,sum as (
-	SELECT (havm+ravm+tavm+wb) sum from effectivenessRates
+	SELECT ( -- real count of data factor
+		havm+ravm+tavm
+		+h3t+r3t+t3t
+		+wb+rw+rww+p
+	) sum from effectivenessRates
 )
-select 
-	(sum-havm/sum) havm
-	,(sum-ravm/sum) ravm
-	,(sum-tavm/sum) tavm 
-	,(sum-wb/sum) wb
-from effectivenessRates,sum
-;
-	
-select 
-	1-(havm/sum) havm
-	,1-(ravm/sum) ravm
-	,1-(tavm/sum) tavm 
-	,1-(wb/sum) wb
-from effectivenessRates,sum
+,sum1 as (
+	select 
+		(sum-havm/sum) havm
+		,(sum-ravm/sum) ravm
+		,(sum-tavm/sum) tavm 
+		,(sum-h3t/sum) h3t
+		,(sum-r3t/sum) r3t
+		,(sum-t3t/sum) t3t 
+		,(sum-wb/sum) wb
+		,(sum-rw/sum) rw
+		,(sum-rww/sum) rww
+		,(sum-p/sum) p
+	from effectivenessRates,sum
+)
+,sum2 as (
+	SELECT (
+		havm+ravm+tavm
+		+h3t+r3t+t3t
+		+wb+rw+rww+p
+	) sum from sum1
+)
+,sum3 as (
+	select 
+		(havm/sum) havm
+		,(ravm/sum) ravm
+		,(tavm/sum) tavm 
+		,(h3t/sum) h3t
+		,(r3t/sum) r3t
+		,(t3t/sum) t3t 
+		,(wb/sum) wb
+		,(rw/sum) rw
+		,(rww/sum) rww
+		,(p/sum) p
+	from sum1,sum2
+)
+select * from sum3
 ;
 	
 delete from Cache where `key`='wb'; insert into Cache select 'wb' ke,(with  
