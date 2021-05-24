@@ -68,6 +68,9 @@ DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS select t,count(o)*1.0/(select co
 
 
 -- rate effectiveness
+DROP TABLE IF EXISTS Cache; -- calculate the whole race
+CREATE TABLE Cache AS
+select 'havm' `key`,0 `val`;
 delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
 	(
 		--  speed dif of - a horse in dif length of race

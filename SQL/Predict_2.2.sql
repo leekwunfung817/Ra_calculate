@@ -66,6 +66,9 @@ DROP TABLE IF EXISTS r; CREATE TABLE r as select r,avg(mark) avo,count(*) c from
 DROP TABLE IF EXISTS t; CREATE TABLE t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
 
 -- rate effectiveness
+DROP TABLE IF EXISTS Cache; -- calculate the whole race
+CREATE TABLE Cache AS
+select 'havm' `key`,0 `val`;
 delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
 	1-avg(case when m<0 then m*-1 else m end) val from 
 	(select (h.avo-NorRaw.mark) m from h,NorRaw where h.h=NorRaw.h group by h.h);
