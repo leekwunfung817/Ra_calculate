@@ -55,30 +55,29 @@ where a.dt=b.dt
 order by b.dt desc,o asc
 ;
 
-
 -- unit data cache
-DROP TABLE IF EXISTS h; CREATE TABLE h as select h,max(mark) mam,avg(mark) avo,min(mark) mim,meters ,count(*) c from NorRaw group by h,meters;
-DROP TABLE IF EXISTS r; CREATE TABLE r as select r,max(mark) mam,avg(mark) avo,min(mark) mim,meters ,count(*) c from NorRaw group by r,meters;
+DROP TABLE IF EXISTS h; CREATE TABLE h as select h,max(mark) mam,avg(mark) avo,min(mark) mim,meters,count(*) c from NorRaw group by h,meters;
+DROP TABLE IF EXISTS r; CREATE TABLE r as select r,max(mark) mam,avg(mark) avo,min(mark) mim,meters,count(*) c from NorRaw group by r,meters;
 DROP TABLE IF EXISTS t; CREATE TABLE t as select t,max(mark) mam,avg(mark) avo,min(mark) mim,meters,count(*) c from NorRaw group by t,meters;
 
 --上名率
 DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
 WITH 
-a as (select h,count(*) a from NorRaw group by h)
-,c as (select h,count(*) c from NorRaw where o >=3 group by h)
-select a.h,c*1.0/a a from a,c where a.h=c.h
+a as (select h,meters,count(*) a from NorRaw group by h,meters)
+,c as (select h,meters,count(*) c from NorRaw where o >=3 group by h,meters)
+select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h
 ;
 DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
 WITH 
-a as (select r,count(*) a from NorRaw group by r)
-,c as (select r,count(*) c from NorRaw where o >=3 group by r)
-select a.r,c*1.0/a a from a,c where a.r=c.r
+a as (select r,meters,count(*) a from NorRaw group by r,meters)
+,c as (select r,meters,count(*) c from NorRaw where o >=3 group by r,meters)
+select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r
 ;
 DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
 WITH 
-a as (select t,count(*) a from NorRaw group by t)
-,c as (select t,count(*) c from NorRaw where o >=3 group by t)
-select a.t,c*1.0/a a from a,c where a.t=c.t
+a as (select t,meters,count(*) a from NorRaw group by t,meters)
+,c as (select t,meters,count(*) c from NorRaw where o >=3 group by t,meters)
+select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t
 ;
 
 -- rate effectiveness
@@ -145,7 +144,8 @@ effectivenessRates as (
 			+wb
 			--+rw+rww
 			+p
-		) sum 
+		) sum,
+		(h3t+r3t+t3t) sum1
 	from sum1
 )
 ,sum3 as (
@@ -160,6 +160,9 @@ effectivenessRates as (
 		,(wb/sum) wb
 		--,(rw/sum) rw,(rww/sum) rww
 		,(p/sum) p
+		,(h3t/sum1) h3t1
+		,(r3t/sum1) r3t1
+		,(t3t/sum1) t3t1
 	from sum1,sum2
 	where sum1.meters=sum2.meters
 )
@@ -268,14 +271,17 @@ CREATE TABLE result3 as
 		raceno 埸次,
 		meter 路程,
 		h 馬,
-		result2.havo*Cache.havm 馬勝率,
-		result2.h3t*Cache.h3t 馬上名率,
 		r 騎師,
-		result2.ravo*Cache.ravm 騎師勝率,
-		result2.r3t*Cache.r3t 騎師上名率,
 		t 訓練師,
+		result2.havo*Cache.havm 馬勝率,
+		result2.ravo*Cache.ravm 騎師勝率,
 		result2.tavo*Cache.tavm 訓練師勝率,
+		result2.h3t*Cache.h3t 馬上名率,
+		result2.r3t*Cache.r3t 騎師上名率,
 		result2.t3t*Cache.t3t 訓練師上名率,
+		result2.h3t*Cache.h3t1 馬上名率1,
+		result2.r3t*Cache.r3t1 騎師上名率1,
+		result2.t3t*Cache.t3t1 訓練師上名率1,
 		result2.p*Cache.p 排位勝率,
 		-- result2.rw*Cache.rw 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
 		result2.wb*Cache.wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
@@ -284,8 +290,8 @@ CREATE TABLE result3 as
 ;
 
 -- second integrate various kinds of rate
-DROP TABLE IF EXISTS result5;
-CREATE TABLE result5 as 
+DROP TABLE IF EXISTS result4;
+CREATE TABLE result4 as 
 select
 	日期,埸次,
 	路程,
@@ -295,7 +301,8 @@ select
 	--round(騎師勝率,4) 騎師勝率,騎師上名率,--騎師上Q率,
 	訓練師,
 	--round(訓練師勝率,4) 訓練師勝率,訓練師上名率--,訓練師上Q率
-	round((馬勝率+馬上名率+騎師勝率+騎師上名率+訓練師勝率+訓練師勝率+訓練師上名率+排位勝率+賠率勝率),4) 綜合勝率
+	(馬勝率+馬上名率+騎師勝率+騎師上名率+訓練師勝率+訓練師勝率+訓練師上名率+排位勝率+賠率勝率) 綜合勝率,
+	(馬上名率1+騎師上名率1+訓練師上名率1) 上名率
 	--,round(非人為臨埸勝率,4) 臨埸勝率
 	--,round(單位綜合勝率,4) 單位勝率
 	--,round(排位勝率,4) 排位勝率
@@ -309,8 +316,8 @@ from result3
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 -- ranking sorting and indication
-DROP TABLE IF EXISTS result6;
-CREATE TABLE result6 as 
+DROP TABLE IF EXISTS result5;
+CREATE TABLE result5 as 
 select
 	日期,埸次
 	,路程
@@ -318,22 +325,8 @@ select
 	,騎師
 	,訓練師
 	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) rank1
-	--,馬勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬勝率 desc)) rank1
-	--,騎師勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師勝率 desc)) rank2
-	--,訓練師勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 訓練師勝率 desc)) rank3
-	--,臨埸勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 臨埸勝率 desc)) rank5
-	--,單位勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 單位勝率 desc)) rank6
-	--,排位勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 排位勝率 desc)) rank7
-	--,馬負磅勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬負磅勝率 desc)) rank8
-	--,賠率綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率綜合勝率 desc)) rank9
-	--,賠率臨埸勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率臨埸勝率 desc)) rank10
-	--,賠率勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 賠率勝率 desc)) rank11
-	--,馬上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬上名率 desc)) rank1_1
-	--,騎師上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師上名率 desc)) rank2_1
-	--,訓練師上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 訓練師上名率 desc)) rank3_1
-	--,馬上Q率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬上Q率 desc)) rank1_2
-	--,騎師上Q率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師上Q率 desc)) rank2_2
-	--,訓練師上Q率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 訓練師上Q率 desc)) rank3_2
-from result5
+	,上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) rank2
+from result4
 order by 日期 desc,埸次 asc,綜合勝率 desc;
+
 commit;
