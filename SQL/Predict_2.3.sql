@@ -68,7 +68,7 @@ DROP TABLE IF EXISTS t; CREATE TABLE t as select t,avg(mark) avo,count(*) c from
 -- rate effectiveness
 DROP TABLE IF EXISTS Cache; -- calculate the whole race
 CREATE TABLE Cache AS
-select 'havm' `key`,0 `val`;
+select 'havm' `key`,0 `value`;
 delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
 	1-avg(case when m<0 then m*-1 else m end) val from 
 	(select (h.avo-NorRaw.mark) m from h,NorRaw where h.h=NorRaw.h group by h.h);
@@ -153,8 +153,9 @@ CREATE TABLE preventnull as
 	select 
 		dt,raceno
 		,(select avg(b.havo) from result1 b where b.havo>0) ahavo
-		,(select avg(b.ravo) from result1 b where b.havo>0) aravo
-		,(select avg(b.tavo) from result1 b where b.havo>0) atavo
+		,(select avg(b.ravo) from result1 b where b.ravo>0) aravo
+		,(select avg(b.tavo) from result1 b where b.tavo>0) atavo
+		,(select avg(b.rw) from result1 b where b.rw>0) arw
 	from result1 a
 	group by dt,raceno
 ;
@@ -181,7 +182,7 @@ CREATE TABLE result2 as
 		,(case when ravo=0 then (aravo) else ravo end)*ravm ravo
 		,(case when tavo=0 then (atavo) else tavo end)*tavm tavo
 		,(1-((wb-minwb)/(maxwb-minwb)))*wbef wb
-		,(rw-minrw)/(maxrw-minrw)*rwef rw
+		,ifnull((rw-minrw)/(maxrw-minrw),arw)*rwef rw
 		,1-(p-minp)/(maxp-minp)*pef p
 		,havm,ravm,tavm
 		,hc,rc,tc
@@ -202,13 +203,13 @@ CREATE TABLE result3 as
 		raceno 埸次,
 		h 馬,
 		havo 馬勝率,
-		(select c from h_t3 where h_t3.h=result2.h) 馬上名率,
+		ifnull((select c from h_t3 where h_t3.h=result2.h),0) 馬上名率,
 		r 騎師,
 		ravo 騎師勝率,
-		(select c from h_t3 where h_t3.h=result2.h) 騎師上名率,
+		ifnull((select c from r_t3 where r_t3.r=result2.r),0) 騎師上名率,
 		t 訓練師,
 		tavo 訓練師勝率,
-		(select c from h_t3 where h_t3.h=result2.h) 訓練師上名率,
+		ifnull((select c from t_t3 where t_t3.t=result2.t),0) 訓練師上名率,
 		p 排位勝率,
 		rw 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
 		wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
@@ -258,7 +259,7 @@ select
 	,馬
 	,騎師
 	,訓練師
-	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) rank4
+	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) rank1
 	,馬上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬上名率 desc)) rank1_1
 	,騎師上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師上名率 desc)) rank2_1
 from result5
