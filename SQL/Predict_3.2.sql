@@ -179,7 +179,7 @@ CREATE TABLE result1 as
 with
 	Rand as (
 		select --潘明輝(-2)
-			meter,
+			meter*1.0,
 			case when instr(馬名, '(')>=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
 			case when instr(騎師, '(')>=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
 			case when instr(練馬師, '(')>=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
@@ -195,7 +195,7 @@ with
 	)
 	select 
 		Rand.dt,
-		meter*1.0 meter,
+		meter,
 		raceno+0 raceno,
 		Rand.h,Rand.r,Rand.t,
 		IFNULL((select avo from h where h.h like '%'||Rand.h||'%' and meters=meter),0) havo,
@@ -204,6 +204,27 @@ with
 		wb*1.0 wb,
 		rw*1.0 rw,
 		p*1.0 p
+		,ifnull((select a from h_t3 where h_t3.h=Rand.h and h_t3.meters=Rand.meter),
+			ifnull((select a from h_t3 where h_t3.h=Rand.h and h_t3.meters<Rand.meter order by h_t3.meters desc limit 1),
+				ifnull((select a from h_t3 where h_t3.h=Rand.h and h_t3.meters>Rand.meter order by h_t3.meters asc limit 1),
+					NULL
+				)
+			)
+		) h3t
+		,ifnull((select a from r_t3 where r_t3.r=Rand.r and r_t3.meters=Rand.meter),
+			ifnull((select a from r_t3 where r_t3.r=Rand.r and r_t3.meters<Rand.meter order by r_t3.meters desc limit 1),
+				ifnull((select a from r_t3 where r_t3.r=Rand.r and r_t3.meters>Rand.meter order by r_t3.meters asc limit 1),
+					NULL
+				)
+			)
+		) r3t
+		,ifnull((select a from t_t3 where t_t3.t=Rand.t and t_t3.meters=Rand.meter),
+			ifnull((select a from t_t3 where t_t3.t=Rand.h and t_t3.meters<Rand.meter order by t_t3.meters desc limit 1),
+				ifnull((select a from t_t3 where t_t3.t=Rand.t and t_t3.meters>Rand.meter order by t_t3.meters asc limit 1),
+					NULL
+				)
+			)
+		) t3t
 	from 
 		Rand
 	group by Rand.dt,Rand.h
@@ -229,6 +250,12 @@ DROP TABLE IF EXISTS preNor;
 CREATE TABLE preNor as 
 	select 
 		dt,raceno
+		,max(havo) maxhavo,min(havo) minhavo
+		,max(ravo) maxravo,min(ravo) minravo
+		,max(tavo) maxtavo,min(tavo) mintavo
+		,max(h3t) maxh3t,min(h3t) minh3t
+		,max(r3t) maxr3t,min(r3t) minr3t
+		,max(t3t) maxt3t,min(t3t) mint3t
 		,max(wb) maxwb,min(wb) minwb
 		,max(rw) maxrw,min(rw) minrw
 		,max(p) maxp, min(p) minp
@@ -244,30 +271,12 @@ CREATE TABLE result2 as
 		,result1.meter
 		,result1.raceno
 		,h,r,t
-		,(case when havo=0 then (ahavo) else havo end) havo
-		,(case when ravo=0 then (aravo) else ravo end) ravo
-		,(case when tavo=0 then (atavo) else tavo end) tavo
-		,ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters=result1.meter),
-			ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters<result1.meter order by h_t3.meters desc limit 1),
-				ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters>result1.meter order by h_t3.meters asc limit 1),
-					ifnull(ht3,0)
-				)
-			)
-		) h3t
-		,ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters=result1.meter),
-			ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters<result1.meter order by r_t3.meters desc limit 1),
-				ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters>result1.meter order by r_t3.meters asc limit 1),
-					ifnull(rt3,0)
-				)
-			)
-		) r3t
-		,ifnull((select a from t_t3 where t_t3.t=result1.t and t_t3.meters=result1.meter),
-			ifnull((select a from t_t3 where t_t3.t=result1.h and t_t3.meters<result1.meter order by t_t3.meters desc limit 1),
-				ifnull((select a from t_t3 where t_t3.t=result1.t and t_t3.meters>result1.meter order by t_t3.meters asc limit 1),
-					ifnull(tt3,0)
-				)
-			)
-		) t3t
+		,(((case when havo=0 then (ahavo) else havo end)-minhavo)/(maxhavo-minhavo)) havo
+		,(((case when ravo=0 then (aravo) else ravo end)-minravo)/(maxravo-minravo)) ravo
+		,(((case when tavo=0 then (atavo) else tavo end)-mintavo)/(maxtavo-mintavo)) tavo
+		,((ifnull(h3t,ht3)-minh3t)/(maxh3t-minh3t)) h3t
+		,((ifnull(r3t,rt3)-minr3t)/(maxr3t-minr3t)) r3t
+		,((ifnull(t3t,tt3)-mint3t)/(maxt3t-mint3t)) t3t
 		,(1-((wb-minwb)/(maxwb-minwb))) wb
 		,(rw-minrw)/(maxrw-minrw) rw
 		,1-(p-minp)/(maxp-minp) p
