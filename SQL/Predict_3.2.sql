@@ -14,7 +14,7 @@ raw as (
 			(排位體重-實際負磅)*1.0 rww,-- rider with weight
 			完成時間 ct -- complete time
 			,((substr(完成時間,0,instr(完成時間,':'))*60)+(substr(完成時間, instr(完成時間, ':')+1,length(完成時間)-1)))*1.0 dursec
-			,meters*1.0 meters
+			,meters meters
 			,獨贏賠率*1.0 wb -- win bounis
 			,檔位*1.0 p
 		from LocalResults, LocalResultsComInfo
@@ -65,19 +65,19 @@ DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS
 WITH 
 a as (select h,meters,count(*) a from NorRaw group by h,meters)
 ,c as (select h,meters,count(*) c from NorRaw where o >=3 group by h,meters)
-select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h
+select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h and a.meters=c.meters
 ;
 DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
 WITH 
 a as (select r,meters,count(*) a from NorRaw group by r,meters)
 ,c as (select r,meters,count(*) c from NorRaw where o >=3 group by r,meters)
-select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r
+select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r and a.meters=c.meters
 ;
 DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
 WITH 
 a as (select t,meters,count(*) a from NorRaw group by t,meters)
 ,c as (select t,meters,count(*) c from NorRaw where o >=3 group by t,meters)
-select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t
+select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t and a.meters=c.meters
 ;
 
 -- rate effectiveness
@@ -194,9 +194,9 @@ with
 		meter*1.0 meter,
 		raceno+0 raceno,
 		Rand.h,Rand.r,Rand.t,
-		IFNULL((select avo from h where h.h like '%'||Rand.h||'%'),0) havo,
-		IFNULL((select avo from r where r.r like '%'||Rand.r||'%'),0) ravo,
-		IFNULL((select avo from t where t.t like '%'||Rand.t||'%'),0) tavo,
+		IFNULL((select avo from h where h.h like '%'||Rand.h||'%' and meters=meter),0) havo,
+		IFNULL((select avo from r where r.r like '%'||Rand.r||'%' and meters=meter),0) ravo,
+		IFNULL((select avo from t where t.t like '%'||Rand.t||'%' and meters=meter),0) tavo,
 		--(select value from Cache where `key`='havm') havm,
 		--(select value from Cache where `key`='ravm') ravm,
 		--(select value from Cache where `key`='tavm') tavm,
@@ -216,12 +216,15 @@ with
 DROP TABLE IF EXISTS preventnull;
 CREATE TABLE preventnull as 
 	select 
-		dt,raceno
-		,(select avg(b.havo) from result1 b where b.havo>0) ahavo
-		,(select avg(b.ravo) from result1 b where b.havo>0) aravo
-		,(select avg(b.tavo) from result1 b where b.havo>0) atavo
+		dt,raceno,meter
+		,(select avg(b.havo) from result1 b where b.havo>0 and a.meter=b.meter) ahavo
+		,(select avg(b.ravo) from result1 b where b.havo>0 and a.meter=b.meter) aravo
+		,(select avg(b.tavo) from result1 b where b.havo>0 and a.meter=b.meter) atavo
+		,(select avg(a) from h_t3 where a>0 and h_t3.meters=result1.meter) ht3
+		,(select avg(a) from r_t3 where a>0 and r_t3.meters=result1.meter) rt3
+		,(select avg(a) from t_t3 where a>0 and t_t3.meters=result1.meter) tt3
 	from result1 a
-	group by dt,raceno
+	group by dt,raceno,meter
 ;
 
 -- Prepare for normalization
@@ -247,9 +250,21 @@ CREATE TABLE result2 as
 		,(case when havo=0 then (ahavo) else havo end) havo
 		,(case when ravo=0 then (aravo) else ravo end) ravo
 		,(case when tavo=0 then (atavo) else tavo end) tavo
-		,(select a from h_t3 where h_t3.h=result1.h) h3t
-		,(select a from r_t3 where r_t3.r=result1.r) r3t
-		,(select a from t_t3 where t_t3.t=result1.t) t3t
+		,ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters=result1.meter,
+			ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters<result1.meter,
+				ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters>result1.meter,ht3)
+			)
+		) h3t
+		,ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters=result1.meter,
+			ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters<result1.meter,
+				ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters>result1.meter,rt3)
+			)
+		) r3t
+		,ifnull(select a from t_t3 where t_t3.t=result1.t and t_t3.meters=result1.meter,
+			ifnull(select a from t_t3 where t_t3.h=result1.h and t_t3.meters<result1.meter,
+				ifnull(select a from t_t3 where t_t3.t=result1.t and t_t3.meters>result1.meter,ht3)
+			)
+		) t3t
 		,(1-((wb-minwb)/(maxwb-minwb))) wb
 		--,(rw-minrw)/(maxrw-minrw) rw
 		,1-(p-minp)/(maxp-minp) p
