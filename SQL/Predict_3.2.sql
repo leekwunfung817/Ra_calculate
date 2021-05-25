@@ -115,8 +115,9 @@ effectivenessRates as (
 		meters,( -- real count of data factor
 		havm+ravm+tavm
 		+h3t+r3t+t3t
-		+wb
-		-- +rw+rww
+		--+wb
+		+rw
+		--+rww
 		+p
 	) sum from effectivenessRates
 )
@@ -130,7 +131,8 @@ effectivenessRates as (
 		,(sum-r3t/sum) r3t
 		,(sum-t3t/sum) t3t 
 		,(sum-wb/sum) wb
-		--,(sum-rw/sum) rw,(sum-rww/sum) rww
+		,(sum-rw/sum) rw
+		,(sum-rww/sum) rww
 		,(sum-p/sum) p
 	from effectivenessRates,sum
 	where effectivenessRates.meters=sum.meters
@@ -141,8 +143,9 @@ effectivenessRates as (
 		(
 			havm+ravm+tavm
 			+h3t+r3t+t3t
-			+wb
-			--+rw+rww
+			--+wb
+			+rw
+			--+rww
 			+p
 		) sum,
 		(h3t+r3t+t3t) sum1
@@ -158,7 +161,8 @@ effectivenessRates as (
 		,(r3t/sum) r3t
 		,(t3t/sum) t3t 
 		,(wb/sum) wb
-		--,(rw/sum) rw,(rww/sum) rww
+		,(rw/sum) rw
+		,(rww/sum) rww
 		,(p/sum) p
 		,(h3t/sum1) h3t1
 		,(r3t/sum1) r3t1
@@ -197,13 +201,6 @@ with
 		IFNULL((select avo from h where h.h like '%'||Rand.h||'%' and meters=meter),0) havo,
 		IFNULL((select avo from r where r.r like '%'||Rand.r||'%' and meters=meter),0) ravo,
 		IFNULL((select avo from t where t.t like '%'||Rand.t||'%' and meters=meter),0) tavo,
-		--(select value from Cache where `key`='havm') havm,
-		--(select value from Cache where `key`='ravm') ravm,
-		--(select value from Cache where `key`='tavm') tavm,
-		-- IFNULL((select c from h where h.h like '%'||Rand.h||'%'),0) hc, IFNULL((select c from r where r.r like '%'||Rand.r||'%'),0) rc, IFNULL((select c from t where t.t like '%'||Rand.t||'%'),0) tc,
-		--(select value from Cache where `key`='wb') wbef,
-		--(select value from Cache where `key`='rw') rwef,
-		--(select value from Cache where `key`='p') pef,
 		wb*1.0 wb,
 		rw*1.0 rw,
 		p*1.0 p
@@ -220,9 +217,9 @@ CREATE TABLE preventnull as
 		,(select avg(b.havo) from result1 b where b.havo>0 and a.meter=b.meter) ahavo
 		,(select avg(b.ravo) from result1 b where b.havo>0 and a.meter=b.meter) aravo
 		,(select avg(b.tavo) from result1 b where b.havo>0 and a.meter=b.meter) atavo
-		,(select avg(a) from h_t3 where a>0 and h_t3.meters=result1.meter) ht3
-		,(select avg(a) from r_t3 where a>0 and r_t3.meters=result1.meter) rt3
-		,(select avg(a) from t_t3 where a>0 and t_t3.meters=result1.meter) tt3
+		,(select avg(a) from h_t3 where a>0 and h_t3.meters=a.meter) ht3
+		,(select avg(a) from r_t3 where a>0 and r_t3.meters=a.meter) rt3
+		,(select avg(a) from t_t3 where a>0 and t_t3.meters=a.meter) tt3
 	from result1 a
 	group by dt,raceno,meter
 ;
@@ -233,7 +230,7 @@ CREATE TABLE preNor as
 	select 
 		dt,raceno
 		,max(wb) maxwb,min(wb) minwb
-		--,max(rw) maxrw,min(rw) minrw
+		,max(rw) maxrw,min(rw) minrw
 		,max(p) maxp, min(p) minp
 	from result1
 	group by dt,raceno
@@ -244,32 +241,36 @@ DROP TABLE IF EXISTS result2;
 CREATE TABLE result2 as 
 	select 
 		result1.dt
-		,meter
+		,result1.meter
 		,result1.raceno
 		,h,r,t
 		,(case when havo=0 then (ahavo) else havo end) havo
 		,(case when ravo=0 then (aravo) else ravo end) ravo
 		,(case when tavo=0 then (atavo) else tavo end) tavo
-		,ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters=result1.meter,
-			ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters<result1.meter,
-				ifnull(select a from h_t3 where h_t3.h=result1.h and h_t3.meters>result1.meter,ht3)
+		,ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters=result1.meter),
+			ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters<result1.meter order by h_t3.meters desc limit 1),
+				ifnull((select a from h_t3 where h_t3.h=result1.h and h_t3.meters>result1.meter order by h_t3.meters asc limit 1),
+					ifnull(ht3,0)
+				)
 			)
 		) h3t
-		,ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters=result1.meter,
-			ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters<result1.meter,
-				ifnull(select a from r_t3 where r_t3.r=result1.r and r_t3.meters>result1.meter,rt3)
+		,ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters=result1.meter),
+			ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters<result1.meter order by r_t3.meters desc limit 1),
+				ifnull((select a from r_t3 where r_t3.r=result1.r and r_t3.meters>result1.meter order by r_t3.meters asc limit 1),
+					ifnull(rt3,0)
+				)
 			)
 		) r3t
-		,ifnull(select a from t_t3 where t_t3.t=result1.t and t_t3.meters=result1.meter,
-			ifnull(select a from t_t3 where t_t3.h=result1.h and t_t3.meters<result1.meter,
-				ifnull(select a from t_t3 where t_t3.t=result1.t and t_t3.meters>result1.meter,ht3)
+		,ifnull((select a from t_t3 where t_t3.t=result1.t and t_t3.meters=result1.meter),
+			ifnull((select a from t_t3 where t_t3.t=result1.h and t_t3.meters<result1.meter order by t_t3.meters desc limit 1),
+				ifnull((select a from t_t3 where t_t3.t=result1.t and t_t3.meters>result1.meter order by t_t3.meters asc limit 1),
+					ifnull(tt3,0)
+				)
 			)
 		) t3t
 		,(1-((wb-minwb)/(maxwb-minwb))) wb
-		--,(rw-minrw)/(maxrw-minrw) rw
+		,(rw-minrw)/(maxrw-minrw) rw
 		,1-(p-minp)/(maxp-minp) p
-		--,havm,ravm,tavm
-		--,hc,rc,tc
 	from result1,preventnull,preNor
 	where 1=1
 	and preventnull.dt=result1.dt 
@@ -298,10 +299,10 @@ CREATE TABLE result3 as
 		result2.r3t*Cache.r3t1 騎師上名率1,
 		result2.t3t*Cache.t3t1 訓練師上名率1,
 		result2.p*Cache.p 排位勝率,
-		-- result2.rw*Cache.rw 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
-		result2.wb*Cache.wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
+		result2.rw*Cache.rw 馬負磅勝率 -- case when rw=0 then 0.1 else rw end
+		,result2.wb*Cache.wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
 	from result2,Cache
-	where result2.meter=Cache.meters
+	where result2.meter=Cache.meters*1.0
 ;
 
 -- second integrate various kinds of rate
@@ -311,21 +312,10 @@ select
 	日期,埸次,
 	路程,
 	馬,
-	--round(馬勝率,4) 馬勝率,馬上名率,--馬上Q率,
 	騎師,
-	--round(騎師勝率,4) 騎師勝率,騎師上名率,--騎師上Q率,
 	訓練師,
-	--round(訓練師勝率,4) 訓練師勝率,訓練師上名率--,訓練師上Q率
-	(馬勝率+馬上名率+騎師勝率+騎師上名率+訓練師勝率+訓練師勝率+訓練師上名率+排位勝率+賠率勝率) 綜合勝率,
+	(馬勝率+馬上名率+騎師勝率+騎師上名率+訓練師勝率+訓練師勝率+訓練師上名率+排位勝率+馬負磅勝率) 綜合勝率,
 	(馬上名率1+騎師上名率1+訓練師上名率1) 上名率
-	--,round(非人為臨埸勝率,4) 臨埸勝率
-	--,round(單位綜合勝率,4) 單位勝率
-	--,round(排位勝率,4) 排位勝率
-	--,round(馬負磅勝率,4) 馬負磅勝率
-	--,round((單位綜合勝率+臨埸比例勝率),4) 賠率綜合勝率
-	--,round(臨埸比例勝率,4) 賠率臨埸勝率
-	--,round(賠率勝率,4) 賠率勝率
-	--,round(馬勝率,4) 馬勝率,round(騎師勝率,4) 騎師勝率,round(訓練師勝率,4) 訓練師勝率
 from result3
 -- where 埸次 in (4,5,6)
 order by 日期 desc,埸次 asc,綜合勝率 desc;
@@ -339,9 +329,11 @@ select
 	,馬
 	,騎師
 	,訓練師
-	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) rank1
-	,上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) rank2
+	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率排名
+	,上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
 from result4
 order by 日期 desc,埸次 asc,綜合勝率 desc;
+
+DROP TABLE IF EXISTS result6;
 
 commit;
