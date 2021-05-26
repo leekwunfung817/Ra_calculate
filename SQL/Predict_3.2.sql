@@ -114,7 +114,7 @@ effectivenessRates as (
 	SELECT 
 		meters,( -- real count of data factor
 		havm+ravm+tavm
-		+h3t+r3t+t3t
+		--+h3t+r3t+t3t
 		--+wb
 		+rw
 		--+rww
@@ -142,7 +142,7 @@ effectivenessRates as (
 		meters,
 		(
 			havm+ravm+tavm
-			+h3t+r3t+t3t
+			--+h3t+r3t+t3t
 			--+wb
 			+rw
 			--+rww
@@ -323,7 +323,9 @@ select
 	馬,
 	騎師,
 	訓練師,
-	(馬勝率+馬上名率+騎師勝率+騎師上名率+訓練師勝率+訓練師勝率+訓練師上名率+排位勝率+馬負磅勝率) 綜合勝率,
+	(馬勝率+騎師勝率+訓練師勝率
+	-- +馬上名率+騎師上名率+訓練師上名率
+	+排位勝率+馬負磅勝率) 綜合勝率,
 	(馬上名率1+騎師上名率1+訓練師上名率1) 上名率
 from result3
 -- where 埸次 in (4,5,6)
