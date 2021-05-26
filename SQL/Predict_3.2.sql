@@ -64,19 +64,19 @@ DROP TABLE IF EXISTS t; CREATE TABLE t as select t,max(mark) mam,avg(mark) avo,m
 DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
 WITH 
 a as (select h,meters,count(*) a from NorRaw group by h,meters)
-,c as (select h,meters,count(*) c from NorRaw where o >=3 group by h,meters)
+,c as (select h,meters,count(*) c from NorRaw where o <=4 group by h,meters)
 select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h and a.meters=c.meters
 ;
 DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
 WITH 
 a as (select r,meters,count(*) a from NorRaw group by r,meters)
-,c as (select r,meters,count(*) c from NorRaw where o >=3 group by r,meters)
+,c as (select r,meters,count(*) c from NorRaw where o <=4 group by r,meters)
 select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r and a.meters=c.meters
 ;
 DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
 WITH 
 a as (select t,meters,count(*) a from NorRaw group by t,meters)
-,c as (select t,meters,count(*) c from NorRaw where o >=3 group by t,meters)
+,c as (select t,meters,count(*) c from NorRaw where o <=4 group by t,meters)
 select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t and a.meters=c.meters
 ;
 
@@ -311,7 +311,7 @@ CREATE TABLE result3 as
 		result2.rw*Cache.rw 馬負磅勝率 -- case when rw=0 then 0.1 else rw end
 		,result2.wb*Cache.wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
 	from result2,Cache
-	where result2.meter=Cache.meters*1.0
+	where result2.meter*1.0=Cache.meters*1.0
 ;
 
 -- second integrate various kinds of rate
