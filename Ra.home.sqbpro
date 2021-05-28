@@ -487,22 +487,33 @@ select
 	,騎師
 	,訓練師
 	,round(綜合勝率,4) 綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率排名
-	,round(上名率,4) 上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
-from result4
+	,round(上名率,4) 上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
+	,round(dif,2) dif
+from result4,(
+	with 
+		hh as (select meters,avg(1-dif) dif from h group by meters),
+		rr as (select meters,avg(1-dif) dif from r group by meters),
+		tt as (select meters,avg(1-dif) dif from t group by meters),
+		r1 as (select hh.meters,(hh.dif+rr.dif+tt.dif)/3 dif,hh.dif h,rr.dif r,tt.dif t from hh,rr,tt where hh.meters=rr.meters and tt.meters=rr.meters),
+		h1 as (select max(dif) maxdif,min(dif) mindif from r1),
+		rr1 as (select meters,1-(dif-mindif)/(maxdif-mindif) wr from r1,h1)
+		select * from r1
+) e_diff
+where e_diff.meters=路程
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 DROP TABLE IF EXISTS result6;
 CREATE TABLE result6 as 
-select * from result5 where 路程 in (select 路程 from result5 group by 日期,埸次 order by 路程 desc limit 2)
+select * from result5 where dif in (select dif from result5 group by 日期,埸次 order by dif desc limit 2)
 ;
 
-commit;</sql><sql name="SQL 5">with 
-hh as (select meters,avg(1-dif) dif from h group by meters),
-rr as (select meters,avg(1-dif) dif from r group by meters),
-tt as (select meters,avg(1-dif) dif from t group by meters),
-r1 as (select hh.meters,(hh.dif+rr.dif+tt.dif)/3 dif,hh.dif h,rr.dif r,tt.dif t from hh,rr,tt where hh.meters=rr.meters and tt.meters=rr.meters),
-h1 as (select max(dif) maxdif,min(dif) mindif from r1),
-rr1 as (select meters,1-(dif-mindif)/(maxdif-mindif) wr from r1,h1)
+commit;</sql><sql name="SQL 5">with 
+hh as (select meters,avg(1-dif) dif from h group by meters),
+rr as (select meters,avg(1-dif) dif from r group by meters),
+tt as (select meters,avg(1-dif) dif from t group by meters),
+r1 as (select hh.meters,(hh.dif+rr.dif+tt.dif)/3 dif,hh.dif h,rr.dif r,tt.dif t from hh,rr,tt where hh.meters=rr.meters and tt.meters=rr.meters),
+h1 as (select max(dif) maxdif,min(dif) mindif from r1),
+rr1 as (select meters,1-(dif-mindif)/(maxdif-mindif) wr from r1,h1)
 select * from r1</sql><sql name="SQL 4">with 
 hh as (select meters,avg(dif) dif from h group by meters),
 rr as (select meters,avg(dif) dif from r group by meters),
