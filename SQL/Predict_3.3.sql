@@ -421,20 +421,22 @@ a as (
 	select 
 		*
 		,(havo_e+ravo_e+tavo_e) sum_t3_e
-		,(havo_e+ravo_e+tavo_e+wb_e+rw_e+p_e) sum_e
+		,(havo_e+ravo_e+tavo_e
+		--+wb_e
+		+rw_e+p_e) sum_e
 	from result1
 )
 select 
 	*
-	,h3t/sum_t3_e havo_t3_e
-	,r3t/sum_t3_e ravo_t3_e
-	,t3t/sum_t3_e tavo_t3_e
-	,havo_e/sum_e havo_e
-	,ravo_e/sum_e ravo_e
-	,tavo_e/sum_e tavo_e
-	,wb_e/sum_e wb_e
-	,rw_e/sum_e rw_e
-	,p_e/sum_e p_e
+	,h3t/sum_t3_e havo_t3_er
+	,r3t/sum_t3_e ravo_t3_er
+	,t3t/sum_t3_e tavo_t3_er
+	,havo_e/sum_e havo_er
+	,ravo_e/sum_e ravo_er
+	,tavo_e/sum_e tavo_er
+	--,wb_e/sum_e wb_er
+	,rw_e/sum_e rw_er
+	,p_e/sum_e p_er
 from a
 ;
 
@@ -448,15 +450,15 @@ CREATE TABLE result3 as
 		h 馬,
 		r 騎師,
 		t 訓練師,
-		result2.havo*havo_e 馬勝率,
-		result2.ravo*ravo_e 騎師勝率,
-		result2.tavo*tavo_e 訓練師勝率,
-		result2.p*p_e 排位勝率,
-		result2.rw*rw_e 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
-		result2.wb*wb_e 賠率勝率, -- case when wb=0 then 0.1 else wb end
-		result2.h3t*havo_t3_e 馬上名率,
-		result2.r3t*ravo_t3_e 騎師上名率,
-		result2.t3t*tavo_t3_e 訓練師上名率
+		result2.havo*havo_er 馬勝率,
+		result2.ravo*ravo_er 騎師勝率,
+		result2.tavo*tavo_er 訓練師勝率,
+		result2.p*p_er 排位勝率,
+		result2.rw*rw_er 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
+		-- result2.wb*wb_er 賠率勝率, -- case when wb=0 then 0.1 else wb end
+		result2.h3t*havo_t3_er 馬上名率,
+		result2.r3t*ravo_t3_er 騎師上名率,
+		result2.t3t*tavo_t3_er 訓練師上名率
 	from result2
 ;
 
@@ -484,11 +486,25 @@ select
 	,馬
 	,騎師
 	,訓練師
-	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率排名
-	,上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
-from result4
+	,round(綜合勝率,4) 綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率排名
+	,round(上名率,4) 上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
+	,round(dif,2) dif
+from result4,(
+	with 
+		hh as (select meters,avg(1-dif) dif from h group by meters),
+		rr as (select meters,avg(1-dif) dif from r group by meters),
+		tt as (select meters,avg(1-dif) dif from t group by meters),
+		r1 as (select hh.meters,(hh.dif+rr.dif+tt.dif)/3 dif,hh.dif h,rr.dif r,tt.dif t from hh,rr,tt where hh.meters=rr.meters and tt.meters=rr.meters),
+		h1 as (select max(dif) maxdif,min(dif) mindif from r1),
+		rr1 as (select meters,1-(dif-mindif)/(maxdif-mindif) wr from r1,h1)
+		select * from r1
+) e_diff
+where e_diff.meters=路程
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 DROP TABLE IF EXISTS result6;
+CREATE TABLE result6 as 
+select * from result5 where dif in (select dif from result5 group by 日期,埸次 order by dif desc limit 2)
+;
 
 commit;
