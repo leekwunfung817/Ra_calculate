@@ -453,7 +453,7 @@ CREATE TABLE result3 as
 		result2.havo*havo_er 馬勝率,
 		result2.ravo*ravo_er 騎師勝率,
 		result2.tavo*tavo_er 訓練師勝率,
-		result2.p*p_er 排位勝率,
+		-- result2.p*p_er 排位勝率,
 		result2.rw*rw_er 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
 		-- result2.wb*wb_er 賠率勝率, -- case when wb=0 then 0.1 else wb end
 		result2.h3t*havo_t3_er 馬上名率,
@@ -471,7 +471,9 @@ select
 	馬,
 	騎師,
 	訓練師,
-	(馬勝率+騎師勝率+訓練師勝率+排位勝率+馬負磅勝率) 綜合勝率,
+	(馬勝率+騎師勝率+訓練師勝率
+	-- +排位勝率
+	+馬負磅勝率) 綜合勝率,
 	(馬上名率+騎師上名率+訓練師上名率) 上名率
 from result3
 -- where 埸次 in (4,5,6)

@@ -56,9 +56,24 @@ order by b.dt desc,o asc
 ;
 
 --上名率
-DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS select h,count(o)*1.0/(select count(*) from NorRaw b where a.h=b.h) c,(select count(*) from NorRaw b where a.h=b.h) a from NorRaw a where o in (1,2,3) group by h order by c desc;
-DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS select r,count(o)*1.0/(select count(*) from NorRaw b where a.r=b.r) c,(select count(*) from NorRaw b where a.r=b.r) a from NorRaw a where o in (1,2,3) group by r order by c desc;
-DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS select t,count(o)*1.0/(select count(*) from NorRaw b where a.t=b.t) c,(select count(*) from NorRaw b where a.t=b.t) a from NorRaw a where o in (1,2,3) group by r order by c desc;
+DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
+WITH 
+a as (select h,count(*) a from Raw group by h)
+,c as (select h,count(*) c from Raw where o <=4 group by h)
+select a.h,c*1.0/a a,c from a,c where a.h=c.h
+;
+DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
+WITH 
+a as (select r,count(*) a from Raw group by r)
+,c as (select r,count(*) c from Raw where o <=4 group by r)
+select a.r,c*1.0/a a,c from a,c where a.r=c.r
+;
+DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
+WITH 
+a as (select t,count(*) a from Raw group by t)
+,c as (select t,count(*) c from Raw where o <=4 group by t)
+select a.t,c*1.0/a a,c from a,c where a.t=c.t
+;
 
 -- unit data cache
 DROP TABLE IF EXISTS h; CREATE TABLE h as select h,avg(mark) avo,count(*) c from NorRaw group by h;
