@@ -513,8 +513,8 @@ from D_Formula.result3
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 -- ranking sorting and indication
-DROP TABLE IF EXISTS D_Formula.result5;
-CREATE TABLE D_Formula.result5 as 
+DROP TABLE IF EXISTS D_Formula.result5F3_4;
+CREATE TABLE D_Formula.result5F3_4 as 
 select
 	日期,埸次
 	,路程
@@ -537,10 +537,10 @@ from D_Formula.result4,(
 where e_diff.meters=路程
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
-DROP TABLE IF EXISTS D_Formula.result6;
-CREATE TABLE D_Formula.result6 as 
-select * from D_Formula.result5 where dif in (
-	select dif from D_Formula.result5 group by 日期,埸次 order by dif desc limit 2
+DROP TABLE IF EXISTS D_Formula.result6F3_4;
+CREATE TABLE D_Formula.result6F3_4 as 
+select * from D_Formula.result5F3_4 where dif in (
+	select dif from D_Formula.result5F3_4 group by 日期,埸次 order by dif desc limit 2
 )
 ;
 

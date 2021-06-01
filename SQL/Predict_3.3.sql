@@ -1,6 +1,6 @@
 
-DROP TABLE IF EXISTS Raw; -- calculate the whole race
-CREATE TABLE Raw AS
+DROP TABLE IF EXISTS B_PreProcess.Raw; -- calculate the whole race
+CREATE TABLE B_PreProcess.Raw AS
 with a as (
 	SELECT 
 		LocalResults.dt,
@@ -27,7 +27,7 @@ from a
 ;
 
 -- cw avg speed
-DROP TABLE IF EXISTS cw; CREATE TABLE cw as 
+DROP TABLE IF EXISTS B_PreProcess.cw; CREATE TABLE B_PreProcess.cw as 
 WITH
 a as (
 	select 
@@ -60,7 +60,7 @@ select * from std
 ;
 
 -- rw avg speed
-DROP TABLE IF EXISTS rw; CREATE TABLE rw as 
+DROP TABLE IF EXISTS B_PreProcess.rw; CREATE TABLE B_PreProcess.rw as 
 WITH
 a as (
 	select 
@@ -93,7 +93,7 @@ select * from std
 ;
 
 -- rww avg speed
-DROP TABLE IF EXISTS rww; CREATE TABLE rww as 
+DROP TABLE IF EXISTS B_PreProcess.rww; CREATE TABLE B_PreProcess.rww as 
 WITH
 a as (
 	select 
@@ -126,7 +126,7 @@ select * from std
 ;
 
 -- p avg speed
-DROP TABLE IF EXISTS p; CREATE TABLE p as 
+DROP TABLE IF EXISTS B_PreProcess.p; CREATE TABLE B_PreProcess.p as 
 WITH
 a as (
 	select 
@@ -159,7 +159,7 @@ select * from std
 ;
 
 -- unit data cache
-DROP TABLE IF EXISTS h; CREATE TABLE h as 
+DROP TABLE IF EXISTS B_PreProcess.h; CREATE TABLE B_PreProcess.h as 
 WITH
 a as (
 	select 
@@ -191,7 +191,7 @@ a as (
 select * from std
 ;
 
-DROP TABLE IF EXISTS r; CREATE TABLE r as 
+DROP TABLE IF EXISTS B_PreProcess.r; CREATE TABLE B_PreProcess.r as 
 WITH
 a as (
 	select 
@@ -223,7 +223,7 @@ a as (
 select * from std
 ;
 
-DROP TABLE IF EXISTS t; CREATE TABLE t as 
+DROP TABLE IF EXISTS B_PreProcess.t; CREATE TABLE B_PreProcess.t as 
 WITH
 a as (
 	select 
@@ -256,19 +256,19 @@ select * from std
 ;
 
 --上名率
-DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.h_t3; CREATE TABLE B_PreProcess.h_t3 AS 
 WITH 
 a as (select h,meters,count(*) a from Raw group by h,meters)
 ,c as (select h,meters,count(*) c from Raw where o <=4 group by h,meters)
 select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h and a.meters=c.meters
 ;
-DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.r_t3; CREATE TABLE B_PreProcess.r_t3 AS 
 WITH 
 a as (select r,meters,count(*) a from Raw group by r,meters)
 ,c as (select r,meters,count(*) c from Raw where o <=4 group by r,meters)
 select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r and a.meters=c.meters
 ;
-DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.t_t3; CREATE TABLE B_PreProcess.t_t3 AS 
 WITH 
 a as (select t,meters,count(*) a from Raw group by t,meters)
 ,c as (select t,meters,count(*) c from Raw where o <=4 group by t,meters)
@@ -276,8 +276,8 @@ select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t and a.meters=c.meters
 ;
 
 -- calculation begin - data preprocess
-DROP TABLE IF EXISTS Rand;
-CREATE TABLE Rand as 
+DROP TABLE IF EXISTS B_PreProcess.Rand;
+CREATE TABLE B_PreProcess.Rand as 
 	select --潘明輝(-2)
 		meter*1.0 meter,
 		case when instr(馬名, '(')>=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
@@ -296,8 +296,8 @@ CREATE TABLE Rand as
 
 
 -- Prevent no records
-DROP TABLE IF EXISTS preventnull;
-CREATE TABLE preventnull as 
+DROP TABLE IF EXISTS D_Formula.preventnull;
+CREATE TABLE D_Formula.preventnull as 
 	select 
 		dt,raceno,meter
 		,(select avg(b.avm) from h b where b.avm>0 and a.meter=b.meters) ahavo
@@ -320,8 +320,8 @@ CREATE TABLE preventnull as
 ;
 
 -- calculation begin - data preprocess
-DROP TABLE IF EXISTS result1;
-CREATE TABLE result1 as 
+DROP TABLE IF EXISTS D_Formula.result1;
+CREATE TABLE D_Formula.result1 as 
 select 
 	Rand.dt,
 	Rand.meter,
@@ -414,8 +414,8 @@ group by Rand.dt,Rand.raceno,Rand.h
 ;
 
 -- normalization
-DROP TABLE IF EXISTS result2;
-CREATE TABLE result2 as 
+DROP TABLE IF EXISTS D_Formula.result2;
+CREATE TABLE D_Formula.result2 as 
 with
 a as (
 	select 
@@ -441,8 +441,8 @@ from a
 ;
 
 -- naming and translation
-DROP TABLE IF EXISTS result3;
-CREATE TABLE result3 as 
+DROP TABLE IF EXISTS D_Formula.result3;
+CREATE TABLE D_Formula.result3 as 
 	select 
 		dt 日期,
 		raceno 埸次,
@@ -463,8 +463,8 @@ CREATE TABLE result3 as
 ;
 
 -- second integrate various kinds of rate
-DROP TABLE IF EXISTS result4;
-CREATE TABLE result4 as 
+DROP TABLE IF EXISTS D_Formula.result4;
+CREATE TABLE D_Formula.result4 as 
 select
 	日期,埸次,
 	路程,
@@ -480,8 +480,8 @@ from result3
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 -- ranking sorting and indication
-DROP TABLE IF EXISTS result5;
-CREATE TABLE result5 as 
+DROP TABLE IF EXISTS D_Formula.result5;
+CREATE TABLE D_Formula.result5 as 
 select
 	日期,埸次
 	,路程
@@ -504,8 +504,8 @@ from result4,(
 where e_diff.meters=路程
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
-DROP TABLE IF EXISTS result6;
-CREATE TABLE result6 as 
+DROP TABLE IF EXISTS D_Formula.result6;
+CREATE TABLE D_Formula.result6 as 
 select * from result5 where dif in (select dif from result5 group by 日期,埸次 order by dif desc limit 2)
 ;
 

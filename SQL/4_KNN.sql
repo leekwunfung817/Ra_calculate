@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS KNNNorRaw; -- calculate the whole race
-CREATE TABLE KNNNorRaw AS
+DROP TABLE IF EXISTS B_PreProcess.KNNNorRaw; -- calculate the whole race
+CREATE TABLE B_PreProcess.KNNNorRaw AS
 with 
 raw as (
 		SELECT 
@@ -9,12 +9,12 @@ raw as (
 			,(排位體重-實際負磅)*1.0 rww
 			,完成時間 ct
 			,((substr(完成時間,0,instr(完成時間,':'))*60)+(substr(完成時間, instr(完成時間, ':')+1,length(完成時間)-1)))*1.0 dursec
-			,meters*1.0 meters
+			,LocalResultsComInfo.meters*1.0 meters
 			,獨贏賠率*1.0 wb
 			,檔位*1.0 p
-			,IFNULL(h.avo,0) havo
-			,IFNULL(r.avo,0) ravo
-			,IFNULL(t.avo,1) tavo
+			,IFNULL(h.avm,0) havo
+			,IFNULL(r.avm,0) ravo
+			,IFNULL(t.avm,1) tavo
 		from LocalResults, LocalResultsComInfo,h,r,t
 		where LocalResults.dt=LocalResultsComInfo.dt
 		and h.h=馬名 and r.r=騎師 and t.t=練馬師

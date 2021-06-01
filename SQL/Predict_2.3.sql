@@ -1,6 +1,6 @@
 -- Normalise history data
-DROP TABLE IF EXISTS NorRaw; -- calculate the whole race
-CREATE TABLE NorRaw AS
+DROP TABLE IF EXISTS B_PreProcess.NorRaw; -- calculate the whole race
+CREATE TABLE B_PreProcess.NorRaw AS
 with 
 raw as (
 		SELECT 
@@ -56,19 +56,19 @@ order by b.dt desc,o asc
 ;
 
 --上名率
-DROP TABLE IF EXISTS h_t3; CREATE TABLE h_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.h_t3; CREATE TABLE B_PreProcess.h_t3 AS 
 WITH 
 a as (select h,count(*) a from Raw group by h)
 ,c as (select h,count(*) c from Raw where o <=4 group by h)
 select a.h,c*1.0/a a,c from a,c where a.h=c.h
 ;
-DROP TABLE IF EXISTS r_t3; CREATE TABLE r_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.r_t3; CREATE TABLE B_PreProcess.r_t3 AS 
 WITH 
 a as (select r,count(*) a from Raw group by r)
 ,c as (select r,count(*) c from Raw where o <=4 group by r)
 select a.r,c*1.0/a a,c from a,c where a.r=c.r
 ;
-DROP TABLE IF EXISTS t_t3; CREATE TABLE t_t3 AS 
+DROP TABLE IF EXISTS B_PreProcess.t_t3; CREATE TABLE B_PreProcess.t_t3 AS 
 WITH 
 a as (select t,count(*) a from Raw group by t)
 ,c as (select t,count(*) c from Raw where o <=4 group by t)
@@ -76,13 +76,13 @@ select a.t,c*1.0/a a,c from a,c where a.t=c.t
 ;
 
 -- unit data cache
-DROP TABLE IF EXISTS h; CREATE TABLE h as select h,avg(mark) avo,count(*) c from NorRaw group by h;
-DROP TABLE IF EXISTS r; CREATE TABLE r as select r,avg(mark) avo,count(*) c from NorRaw group by r;
-DROP TABLE IF EXISTS t; CREATE TABLE t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
+DROP TABLE IF EXISTS B_PreProcess.h; CREATE TABLE B_PreProcess.h as select h,avg(mark) avo,count(*) c from NorRaw group by h;
+DROP TABLE IF EXISTS B_PreProcess.r; CREATE TABLE B_PreProcess.r as select r,avg(mark) avo,count(*) c from NorRaw group by r;
+DROP TABLE IF EXISTS B_PreProcess.t; CREATE TABLE B_PreProcess.t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
 
 -- rate effectiveness
-DROP TABLE IF EXISTS Cache; -- calculate the whole race
-CREATE TABLE Cache AS
+DROP TABLE IF EXISTS D_Formula.Cache; -- calculate the whole race
+CREATE TABLE D_Formula.Cache AS
 select 'havm' `key`,0 `value`;
 delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
 	1-avg(case when m<0 then m*-1 else m end) val from 
@@ -120,8 +120,8 @@ delete from Cache where `key`='p';insert into Cache select 'p' ke,(with
 	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
 
 -- calculation begin - data preprocess
-DROP TABLE IF EXISTS result1;
-CREATE TABLE result1 as 
+DROP TABLE IF EXISTS D_Formula.result1;
+CREATE TABLE D_Formula.result1 as 
 with
 	Rand as (
 		select --潘明輝(-2)
@@ -163,8 +163,8 @@ with
 ;
 
 -- Prevent no records
-DROP TABLE IF EXISTS preventnull;
-CREATE TABLE preventnull as 
+DROP TABLE IF EXISTS D_Formula.preventnull;
+CREATE TABLE D_Formula.preventnull as 
 	select 
 		dt,raceno
 		,(select avg(b.havo) from result1 b where b.havo>0) ahavo
@@ -176,8 +176,8 @@ CREATE TABLE preventnull as
 ;
 
 -- Prepare for normalization
-DROP TABLE IF EXISTS preNor;
-CREATE TABLE preNor as 
+DROP TABLE IF EXISTS D_Formula.preNor;
+CREATE TABLE D_Formula.preNor as 
 	select 
 		dt,raceno
 		,max(wb) maxwb,min(wb) minwb
@@ -188,20 +188,20 @@ CREATE TABLE preNor as
 ;
 
 -- normalization
-DROP TABLE IF EXISTS result2;
-CREATE TABLE result2 as 
+DROP TABLE IF EXISTS D_Formula.result2;
+CREATE TABLE D_Formula.result2 as 
 	select 
 		result1.dt,result1.raceno
 		,h,r,t
 		,(case when havo=0 then (ahavo) else havo end)*havm havo
 		,(case when ravo=0 then (aravo) else ravo end)*ravm ravo
 		,(case when tavo=0 then (atavo) else tavo end)*tavm tavo
-		,(1-((wb-minwb)/(maxwb-minwb)))*wbef wb
-		,ifnull((rw-minrw)/(maxrw-minrw),arw)*rwef rw
+		,(1-((result1.wb-minwb)/(maxwb-minwb)))*wbef wb
+		,ifnull((result1.rw-minrw)/(maxrw-minrw),preventnull.arw)*rwef rw
 		,1-(p-minp)/(maxp-minp)*pef p
 		,havm,ravm,tavm
 		,hc,rc,tc
-	from result1,preventnull,preNor
+	from D_Formula.result1,D_Formula.preventnull,preNor
 	where 1=1
 	and preventnull.dt=result1.dt 
 	and result1.raceno=preventnull.raceno
@@ -211,8 +211,8 @@ CREATE TABLE result2 as
 ;
 
 -- naming and translation
-DROP TABLE IF EXISTS result3;
-CREATE TABLE result3 as 
+DROP TABLE IF EXISTS D_Formula.result3;
+CREATE TABLE D_Formula.result3 as 
 	select 
 		dt 日期,
 		raceno 埸次,
@@ -232,8 +232,8 @@ CREATE TABLE result3 as
 ;
 
 -- first integrate various kinds of rate
-DROP TABLE IF EXISTS result4;
-CREATE TABLE result4 as 
+DROP TABLE IF EXISTS D_Formula.result4;
+CREATE TABLE D_Formula.result4 as 
 	select 
 		*,
 		((馬勝率+騎師勝率+訓練師勝率)) 單位綜合勝率,
@@ -243,8 +243,8 @@ CREATE TABLE result4 as
 ;
 
 -- second integrate various kinds of rate
-DROP TABLE IF EXISTS result5;
-CREATE TABLE result5 as 
+DROP TABLE IF EXISTS D_Formula.result5;
+CREATE TABLE D_Formula.result5 as 
 select
 	日期,埸次,
 	馬,
@@ -267,8 +267,8 @@ from result4
 order by 日期 desc,埸次 asc,綜合勝率 desc;
 
 -- ranking sorting and indication
-DROP TABLE IF EXISTS result6;
-CREATE TABLE result6 as 
+DROP TABLE IF EXISTS D_Formula.result6F2_3;
+CREATE TABLE D_Formula.result6F2_3 as 
 select
 	日期,埸次
 	,馬

@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS KNNPredict; -- calculate the whole race
-CREATE TABLE KNNPredict AS
+DROP TABLE IF EXISTS B_PreProcess.KNNPredict; -- calculate the whole race
+CREATE TABLE B_PreProcess.KNNPredict AS
 with 
 raw as (
 		SELECT
 			--馬名,
-			ifnull((select avo from h where h.h like '%'||馬名||'%'),0) havo,
-			ifnull((select avo from r where r.r like '%'||騎師||'%'),0) ravo,
-			ifnull((select avo from t where t.t like '%'||練馬師||'%'),0) tavo,
+			ifnull((select avm from h where h.h like '%'||馬名||'%'),0) havo,
+			ifnull((select avm from r where r.r like '%'||騎師||'%'),0) ravo,
+			ifnull((select avm from t where t.t like '%'||練馬師||'%'),0) tavo,
 			dt
 			,負磅*1.0 rw
 			,排位體重*1.0 cw
