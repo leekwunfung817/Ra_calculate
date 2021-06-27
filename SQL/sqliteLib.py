@@ -1,13 +1,23 @@
 #!/usr/bin/python
 
 import sqlite3
-
+# ATTACH DATABASE 'SomeTableFile.db' AS stf;
 # print("Opened database successfully")
+
 def exec(db,sql):
-    conn = sqlite3.connect(db)
+    conn = None
+    if type(db) is list:
+        conn = sqlite3.connect(db[0])
+        for dbn in db:
+            c = conn.cursor()
+            lsql = "ATTACH DATABASE '"+dbn+".db' AS "+dbn.replace('/','').replace('.','')
+            # print(lsql)
+            c.execute(lsql)
+    else:
+        conn = sqlite3.connect(db)
     c = conn.cursor()
     c.execute(sql)
-    print()
+    # print()
     rowCount = 0
     for row in c:
         print('Row:',rowCount+1)
