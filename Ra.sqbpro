@@ -1,0 +1,831 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/Ivan Lee/Documents/Software project/Machine learning/AI/Stock/139/Ra/Ra_calculate/main.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached><db schema="A_Ra" path="C:\Users\Ivan Lee\Documents\Software project\Machine learning\AI\Stock\139\Ra\Ra_calculate\A_Ra.db"/><db schema="B_PreProcess" path="C:\Users\Ivan Lee\Documents\Software project\Machine learning\AI\Stock\139\Ra\Ra_calculate\B_PreProcess.db"/><db schema="C_Analyse" path="C:\Users\Ivan Lee\Documents\Software project\Machine learning\AI\Stock\139\Ra\Ra_calculate\C_Analyse.db"/><db schema="D_Formula" path="C:\Users\Ivan Lee\Documents\Software project\Machine learning\AI\Stock\139\Ra\Ra_calculate\D_Formula.db"/></attached><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="608"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/><expanded_item id="4" parent="1"/><expanded_item id="5" parent="1"/><expanded_item id="6" parent="1"/><expanded_item id="7" parent="1"/></tab_structure><tab_browse><current_table name="4,12:A_RaLocalResults"/><default_encoding codec=""/><browse_table_settings><table schema="A_Ra" name="Cache" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="52"/><column index="2" value="156"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="A_Ra" name="LocalResults" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="13" mode="1"/></sort><column_widths><column index="1" value="76"/><column index="2" value="52"/><column index="3" value="128"/><column index="4" value="75"/><column index="5" value="75"/><column index="6" value="82"/><column index="7" value="82"/><column index="8" value="52"/><column index="9" value="82"/><column index="10" value="131"/><column index="11" value="82"/><column index="12" value="82"/><column index="13" value="106"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="A_Ra" name="RaceCard" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="91"/><column index="2" value="68"/><column index="3" value="82"/><column index="4" value="150"/><column index="5" value="75"/><column index="6" value="52"/><column index="7" value="52"/><column index="8" value="87"/><column index="9" value="82"/><column index="10" value="52"/><column index="11" value="75"/><column index="12" value="82"/><column index="13" value="52"/><column index="14" value="77"/><column index="15" value="82"/><column index="16" value="113"/><column index="17" value="82"/><column index="18" value="52"/><column index="19" value="82"/><column index="20" value="52"/><column index="21" value="82"/><column index="22" value="118"/><column index="23" value="128"/><column index="24" value="300"/><column index="25" value="167"/><column index="26" value="161"/><column index="27" value="82"/><column index="28" value="60"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="B_PreProcess" name="Rand" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="47"/><column index="2" value="59"/><column index="3" value="46"/><column index="4" value="59"/><column index="5" value="59"/><column index="6" value="68"/><column index="7" value="59"/><column index="8" value="73"/><column index="9" value="53"/><column index="10" value="64"/><column index="11" value="109"/><column index="12" value="59"/><column index="13" value="40"/><column index="14" value="40"/><column index="15" value="68"/><column index="16" value="64"/><column index="17" value="40"/><column index="18" value="59"/><column index="19" value="64"/><column index="20" value="40"/><column index="21" value="61"/><column index="22" value="64"/><column index="23" value="89"/><column index="24" value="64"/><column index="25" value="40"/><column index="26" value="64"/><column index="27" value="40"/><column index="28" value="64"/><column index="29" value="92"/><column index="30" value="84"/><column index="31" value="246"/><column index="32" value="130"/><column index="33" value="129"/><column index="34" value="64"/><column index="35" value="60"/><column index="36" value="67"/><column index="37" value="40"/><column index="38" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="B_PreProcess" name="h" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="75"/><column index="2" value="69"/><column index="3" value="147"/><column index="4" value="174"/><column index="5" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="B_PreProcess" name="t" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="92"/><column index="2" value="69"/><column index="3" value="147"/><column index="4" value="174"/><column index="5" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="D_Formula" name="result5F3_4" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="91"/><column index="2" value="52"/><column index="3" value="57"/><column index="4" value="75"/><column index="5" value="58"/><column index="6" value="75"/><column index="7" value="82"/><column index="8" value="118"/><column index="9" value="64"/><column index="10" value="100"/><column index="11" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="D_Formula" name="result6F2_3" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="91"/><column index="2" value="52"/><column index="3" value="75"/><column index="4" value="58"/><column index="5" value="75"/><column index="6" value="82"/><column index="7" value="59"/><column index="8" value="82"/><column index="9" value="81"/><column index="10" value="100"/><column index="11" value="81"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="D_Formula" name="result6F3_4" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="91"/><column index="2" value="52"/><column index="3" value="57"/><column index="4" value="75"/><column index="5" value="58"/><column index="6" value="75"/><column index="7" value="82"/><column index="8" value="118"/><column index="9" value="64"/><column index="10" value="100"/><column index="11" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="Predict_2.3.input.sql">
+DROP TABLE IF EXISTS B_PreProcess.Rand;
+CREATE TABLE B_PreProcess.Rand as 
+	select --潘明輝(-2)
+		case when instr(馬名, '(')&gt;=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
+		case when instr(騎師, '(')&gt;=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
+		case when instr(練馬師, '(')&gt;=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
+		馬名 h,
+		騎師 r,
+		練馬師 t,
+		b.*,
+		今季獎金 wb,
+		負磅 rw,
+		檔位 p
+	from RaceCard b
+	where dt=(select dt from RaceCard order by dt desc limit 1)
+;
+</sql><sql name="Predict_2.3.sql">
+
+-- Normalise history data
+DROP TABLE IF EXISTS B_PreProcess.NorRaw; -- calculate the whole race
+CREATE TABLE B_PreProcess.NorRaw AS
+with 
+raw as (
+		SELECT 
+			LocalResults.dt,
+			CAST( REPLACE(名次,' ','') AS INTEGER ) o,
+			case when instr(馬名, '(')&gt;=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
+			case when instr(騎師, '(')&gt;=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
+			case when instr(練馬師, '(')&gt;=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
+			實際負磅*1.0 rw,-- real weight (just horse)
+			排位體重*1.0 cw,-- comparitive weight (horse with rider and wearing)
+			(排位體重-實際負磅)*1.0 rww,-- rider with weight
+			完成時間 ct -- complete time
+			,((substr(完成時間,0,instr(完成時間,':'))*60)+(substr(完成時間, instr(完成時間, ':')+1,length(完成時間)-1)))*1.0 dursec
+			,meters*1.0 meters
+			,獨贏賠率*1.0 wb -- win bounis
+			,檔位*1.0 p
+		from LocalResults, LocalResultsComInfo
+		where o!=0 and LocalResults.dt=LocalResultsComInfo.dt
+)
+,RaceVar as (
+	select 
+		dt
+		,min(o)*1.0 mino, max(o)*1.0 maxo, count(*) uc -- unit count
+		,min(rww) minrww, max(rww) maxrww -- rider with waering
+		,min(cw) mincw,max(cw) maxcw
+		,min(rw) minrw,max(rw) maxrw
+		,min(wb) minwb,max(wb) maxwb
+		,min(dursec) mindursec,max(dursec) maxdursec
+		,min(p) minp,max(p) maxp
+	from raw a
+	group by a.dt
+)
+select 
+	a.dt
+	,o
+	,h,r,t
+	,(b.meters/dursec) mark --speed mark
+	,(rw-minrw)/(maxrw-minrw) rw
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY rw desc)) rwrank
+	,(cw-mincw)/(maxcw-mincw) cw
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY cw desc)) cwrank
+	,(rww-minrww)/(maxrww-minrww) rww
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY rww desc)) rwwrank
+	,(wb-minwb)/(maxwb-minwb) wb
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY wb asc)) wbrank
+	,(dursec-mindursec)/(maxdursec-mindursec) ndursec
+	,(p-minp)/(maxp-minp) p
+	,(ROW_NUMBER () OVER (Partition by a.dt ORDER BY p asc)) prank
+	,b.meters,dursec
+from raw b,RaceVar a
+where a.dt=b.dt
+order by b.dt desc,o asc
+;
+
+--上名率
+DROP TABLE IF EXISTS B_PreProcess.h_t3; CREATE TABLE B_PreProcess.h_t3 AS 
+WITH 
+a as (select h,count(*) a from Raw group by h)
+,c as (select h,count(*) c from Raw where o &lt;=4 group by h)
+select a.h,c*1.0/a a,c from a,c where a.h=c.h
+;
+DROP TABLE IF EXISTS B_PreProcess.r_t3; CREATE TABLE B_PreProcess.r_t3 AS 
+WITH 
+a as (select r,count(*) a from Raw group by r)
+,c as (select r,count(*) c from Raw where o &lt;=4 group by r)
+select a.r,c*1.0/a a,c from a,c where a.r=c.r
+;
+DROP TABLE IF EXISTS B_PreProcess.t_t3; CREATE TABLE B_PreProcess.t_t3 AS 
+WITH 
+a as (select t,count(*) a from Raw group by t)
+,c as (select t,count(*) c from Raw where o &lt;=4 group by t)
+select a.t,c*1.0/a a,c from a,c where a.t=c.t
+;
+
+-- unit data cache
+DROP TABLE IF EXISTS B_PreProcess.h; CREATE TABLE B_PreProcess.h as select h,avg(mark) avo,count(*) c from NorRaw group by h;
+DROP TABLE IF EXISTS B_PreProcess.r; CREATE TABLE B_PreProcess.r as select r,avg(mark) avo,count(*) c from NorRaw group by r;
+DROP TABLE IF EXISTS B_PreProcess.t; CREATE TABLE B_PreProcess.t as select t,avg(mark) avo,count(*) c from NorRaw group by t;
+
+-- rate effectiveness
+DROP TABLE IF EXISTS D_Formula.Cache; -- calculate the whole race
+CREATE TABLE D_Formula.Cache AS
+select 'havm' `key`,0 `value`;
+delete from Cache where `key`='havm'; insert into Cache select 'havm' ke,
+	1-avg(case when m&lt;0 then m*-1 else m end) val from 
+	(select (h.avo-NorRaw.mark) m from h,NorRaw where h.h=NorRaw.h group by h.h);
+delete from Cache where `key`='ravm'; insert into Cache select 'ravm' ke,
+	1-avg(case when m&lt;0 then m*-1 else m end) val from 
+	(select (r.avo-NorRaw.mark) m from r,NorRaw	where r.r=NorRaw.r group by r.r);
+delete from Cache where `key`='tavm'; insert into Cache select 'tavm' ke,
+	1-avg(case when m&lt;0 then m*-1 else m end) val from 
+	(select (t.avo-NorRaw.mark) m from t,NorRaw	where t.t=NorRaw.t group by t.t);
+delete from Cache where `key`='wb'; insert into Cache select 'wb' ke,(with  
+	L as (select dt,h,r,t,mark,wb ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='rw'; insert into Cache select 'rw' ke,(with  
+	L as (select dt,h,r,t,mark,rw ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='cw'; insert into Cache select 'cw' ke,(with  
+	L as (select dt,h,r,t,mark,cw ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='rww'; insert into Cache select 'rww' ke,(with  
+	L as (select dt,h,r,t,mark,rww ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+delete from Cache where `key`='p';insert into Cache select 'p' ke,(with  
+	L as (select dt,h,r,t,mark,p ana_val  FROM NorRaw),
+	L1 as (SELECT dt,h,r,t,mark,round(ana_val,2) ana_val FROM L where ana_val is not null),
+	L2 as (select avg(mark) avgmark from L1 group by ana_val order by avgmark asc) 
+	select (max(avgmark)-min(avgmark)) 影響率 from L2) val;
+
+-- calculation begin - data preprocess
+DROP TABLE IF EXISTS D_Formula.result1;
+CREATE TABLE D_Formula.result1 as
+	select 
+		Rand.dt,
+		raceno+0 raceno,
+		Rand.h,Rand.r,Rand.t,
+		IFNULL((select avo from h where h.h like '%'||Rand.h||'%'),0) havo,
+		IFNULL((select avo from r where r.r like '%'||Rand.r||'%'),0) ravo,
+		IFNULL((select avo from t where t.t like '%'||Rand.t||'%'),0) tavo,
+		(select value from Cache where `key`='havm') havm,
+		(select value from Cache where `key`='ravm') ravm,
+		(select value from Cache where `key`='tavm') tavm,
+		IFNULL((select c from h where h.h like '%'||Rand.h||'%'),0) hc,
+		IFNULL((select c from r where r.r like '%'||Rand.r||'%'),0) rc,
+		IFNULL((select c from t where t.t like '%'||Rand.t||'%'),0) tc,
+		(select value from Cache where `key`='wb') wbef,
+		(select value from Cache where `key`='rw') rwef,
+		(select value from Cache where `key`='p') pef,
+		wb*1.0 wb,
+		rw*1.0 rw,
+		p*1.0 p
+	from 
+		Rand
+	group by Rand.dt,Rand.h
+;
+
+-- Prevent no records
+DROP TABLE IF EXISTS D_Formula.preventnull;
+CREATE TABLE D_Formula.preventnull as 
+	select 
+		dt,raceno
+		,(select avg(b.havo) from result1 b where b.havo&gt;0) ahavo
+		,(select avg(b.ravo) from result1 b where b.ravo&gt;0) aravo
+		,(select avg(b.tavo) from result1 b where b.tavo&gt;0) atavo
+		,(select avg(b.rw) from result1 b where b.rw&gt;0) arw
+	from result1 a
+	group by dt,raceno
+;
+
+-- Prepare for normalization
+DROP TABLE IF EXISTS D_Formula.preNor;
+CREATE TABLE D_Formula.preNor as 
+	select 
+		dt,raceno
+		,max(wb) maxwb,min(wb) minwb
+		,max(rw) maxrw,min(rw) minrw
+		,max(p) maxp, min(p) minp
+	from result1
+	group by dt,raceno
+;
+
+-- normalization
+DROP TABLE IF EXISTS D_Formula.result2;
+CREATE TABLE D_Formula.result2 as 
+	select 
+		result1.dt,result1.raceno
+		,h,r,t
+		,(case when havo=0 then (ahavo) else havo end)*havm havo
+		,(case when ravo=0 then (aravo) else ravo end)*ravm ravo
+		,(case when tavo=0 then (atavo) else tavo end)*tavm tavo
+		,(1-((result1.wb-minwb)/(maxwb-minwb)))*wbef wb
+		,ifnull((result1.rw-minrw)/(maxrw-minrw),preventnull.arw)*rwef rw
+		,1-(p-minp)/(maxp-minp)*pef p
+		,havm,ravm,tavm
+		,hc,rc,tc
+	from D_Formula.result1,D_Formula.preventnull,preNor
+	where 1=1
+	and preventnull.dt=result1.dt 
+	and result1.raceno=preventnull.raceno
+	and preNor.dt=result1.dt 
+	and result1.raceno=preNor.raceno
+	
+;
+
+-- naming and translation
+DROP TABLE IF EXISTS D_Formula.result3;
+CREATE TABLE D_Formula.result3 as 
+	select 
+		dt 日期,
+		raceno 埸次,
+		h 馬,
+		havo 馬勝率,
+		ifnull((select c from h_t3 where h_t3.h=result2.h),0) 馬上名率,
+		r 騎師,
+		ravo 騎師勝率,
+		ifnull((select c from r_t3 where r_t3.r=result2.r),0) 騎師上名率,
+		t 訓練師,
+		tavo 訓練師勝率,
+		ifnull((select c from t_t3 where t_t3.t=result2.t),0) 訓練師上名率,
+		p 排位勝率,
+		rw 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
+		wb 賠率勝率 -- case when wb=0 then 0.1 else wb end
+	from result2
+;
+
+-- first integrate various kinds of rate
+DROP TABLE IF EXISTS D_Formula.result4;
+CREATE TABLE D_Formula.result4 as 
+	select 
+		*,
+		((馬勝率+騎師勝率+訓練師勝率)) 單位綜合勝率,
+		((賠率勝率+馬負磅勝率+排位勝率)) 臨埸比例勝率,
+		((馬負磅勝率+排位勝率)) 非人為臨埸勝率
+	from result3
+;
+
+-- second integrate various kinds of rate
+DROP TABLE IF EXISTS D_Formula.result5;
+CREATE TABLE D_Formula.result5 as 
+select
+	日期,埸次,
+	馬,
+	round(馬勝率,4) 馬勝率,馬上名率,--馬上Q率,
+	騎師,
+	round(騎師勝率,4) 騎師勝率,騎師上名率,--騎師上Q率,
+	訓練師,
+	round(訓練師勝率,4) 訓練師勝率,訓練師上名率--,訓練師上Q率
+	,round((單位綜合勝率+非人為臨埸勝率),4) 綜合勝率
+	,round(非人為臨埸勝率,4) 臨埸勝率
+	,round(單位綜合勝率,4) 單位勝率
+	,round(排位勝率,4) 排位勝率
+	,round(馬負磅勝率,4) 馬負磅勝率
+	,round((單位綜合勝率+臨埸比例勝率),4) 賠率綜合勝率
+	,round(臨埸比例勝率,4) 賠率臨埸勝率
+	,round(賠率勝率,4) 賠率勝率
+	--,round(馬勝率,4) 馬勝率,round(騎師勝率,4) 騎師勝率,round(訓練師勝率,4) 訓練師勝率
+from result4
+-- where 埸次 in (4,5,6)
+order by 日期 desc,埸次 asc,綜合勝率 desc;
+
+-- ranking sorting and indication
+DROP TABLE IF EXISTS D_Formula.result6F2_3;
+CREATE TABLE D_Formula.result6F2_3 as 
+select
+	日期,埸次
+	,馬
+	,騎師
+	,訓練師
+	,綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) rank1
+	,馬上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 馬上名率 desc)) rank1_1
+	,騎師上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 騎師上名率 desc)) rank2_1
+from result5
+order by 日期 desc,埸次 asc,綜合勝率 desc;
+commit;</sql><sql name="Predict_3.4.input.sql">
+-- calculation begin - data preprocess
+DROP TABLE IF EXISTS B_PreProcess.Rand;
+CREATE TABLE B_PreProcess.Rand as 
+	select --潘明輝(-2)
+		meter*1.0 meter,
+		case when instr(馬名, '(')&gt;=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
+		case when instr(騎師, '(')&gt;=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
+		case when instr(練馬師, '(')&gt;=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
+		馬名 h,
+		騎師 r,
+		練馬師 t,
+		b.*,
+		今季獎金*1.0 wb,
+		負磅*1.0 rw,
+		檔位*1.0 p
+	from A_Ra.RaceCard b
+	where dt=(select dt from RaceCard order by dt desc limit 1)
+;</sql><sql name="Predict_3.4.sql">
+
+DROP TABLE IF EXISTS B_PreProcess.Raw; -- calculate the whole race
+CREATE TABLE B_PreProcess.Raw AS
+with a as (
+	SELECT 
+		LocalResults.dt,
+		CAST( REPLACE(名次,' ','') AS INTEGER ) o,
+		case when instr(馬名, '(')&gt;=1 then (substr(馬名, 0, instr(馬名, '('))) else 馬名 end h,
+		case when instr(騎師, '(')&gt;=1 then (substr(騎師, 0, instr(騎師, '('))) else 騎師 end r,
+		case when instr(練馬師, '(')&gt;=1 then (substr(練馬師, 0, instr(練馬師, '('))) else 練馬師 end t,
+		實際負磅*1.0 rw,-- real weight (just horse)
+		排位體重*1.0 cw,-- comparitive weight (horse with rider and wearing)
+		(排位體重-實際負磅)*1.0 rww,-- rider with weight
+		完成時間 ct -- complete time
+		,((substr(完成時間,0,instr(完成時間,':'))*60)+(substr(完成時間, instr(完成時間, ':')+1,length(完成時間)-1)))*1.0 dursec
+		,meters*1.0 meters
+		,獨贏賠率*1.0 wb -- win bounis
+		,檔位*1.0 p
+	from LocalResults, LocalResultsComInfo
+	where o!=0 and LocalResults.dt=LocalResultsComInfo.dt
+)
+select 
+	dt,o
+	,(meters/dursec) mark --speed mark
+	,h,r,t,rw,cw,rww,ct,dursec,meters,wb,p
+from a
+;
+
+-- cw avg speed
+DROP TABLE IF EXISTS B_PreProcess.cw; CREATE TABLE B_PreProcess.cw as 
+WITH
+a as (
+	select 
+		cw,
+		meters,
+		mark m 
+	from Raw 
+	where cw is not null and cw &gt; 0
+)
+,avg as (
+	select 
+		cw
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by cw,meters
+)
+,std as (
+	select 
+		a.cw,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.cw=avg.cw and a.meters=avg.meters 
+	group by a.cw,a.meters
+)
+select * from std
+;
+
+-- wb avg speed
+DROP TABLE IF EXISTS B_PreProcess.wb; CREATE TABLE B_PreProcess.wb as 
+WITH
+a as (
+	select 
+		wb,
+		meters,
+		mark m 
+	from Raw 
+	where wb is not null and wb &gt; 0
+)
+,avg as (
+	select 
+		wb
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by wb,meters
+)
+,std as (
+	select 
+		a.wb,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.wb=avg.wb and a.meters=avg.meters 
+	group by a.wb,a.meters
+)
+select * from std
+;
+
+-- rw avg speed
+DROP TABLE IF EXISTS B_PreProcess.rw; CREATE TABLE B_PreProcess.rw as 
+WITH
+a as (
+	select 
+		rw,
+		meters,
+		mark m 
+	from Raw 
+	where rw is not null and rw &gt; 0
+)
+,avg as (
+	select 
+		rw
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by rw,meters
+)
+,std as (
+	select 
+		a.rw,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.rw=avg.rw and a.meters=avg.meters 
+	group by a.rw,a.meters
+)
+select * from std
+;
+
+-- rww avg speed
+DROP TABLE IF EXISTS B_PreProcess.rww; CREATE TABLE B_PreProcess.rww as 
+WITH
+a as (
+	select 
+		rww,
+		meters,
+		mark m 
+	from Raw 
+	where rww is not null and rww &gt; 0
+)
+,avg as (
+	select 
+		rww
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by rww,meters
+)
+,std as (
+	select 
+		a.rww,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.rww=avg.rww and a.meters=avg.meters 
+	group by a.rww,a.meters
+)
+select * from std
+;
+
+-- p avg speed
+DROP TABLE IF EXISTS B_PreProcess.p; CREATE TABLE B_PreProcess.p as 
+WITH
+a as (
+	select 
+		p,
+		meters,
+		mark m 
+	from Raw 
+	where p is not null and p &gt; 0
+)
+,avg as (
+	select 
+		p
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by p,meters
+)
+,std as (
+	select 
+		a.p,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.p=avg.p and a.meters=avg.meters 
+	group by a.p,a.meters
+)
+select * from std
+;
+
+-- unit data cache
+DROP TABLE IF EXISTS B_PreProcess.h; CREATE TABLE B_PreProcess.h as 
+WITH
+a as (
+	select 
+		h,
+		meters,
+		mark m 
+	from Raw 
+	where h is not null
+)
+,avg as (
+	select 
+		h
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by h,meters
+)
+,std as (
+	select 
+		a.h,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.h=avg.h and a.meters=avg.meters 
+	group by a.h,a.meters
+)
+select * from std
+;
+
+DROP TABLE IF EXISTS B_PreProcess.r; CREATE TABLE B_PreProcess.r as 
+WITH
+a as (
+	select 
+		r,
+		meters,
+		mark m 
+	from Raw 
+	where r is not null
+)
+,avg as (
+	select 
+		r
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by r,meters
+)
+,std as (
+	select 
+		a.r,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.r=avg.r and a.meters=avg.meters 
+	group by a.r,a.meters
+)
+select * from std
+;
+
+DROP TABLE IF EXISTS B_PreProcess.t; CREATE TABLE B_PreProcess.t as 
+WITH
+a as (
+	select 
+		t,
+		meters,
+		mark m 
+	from Raw 
+	where t is not null
+)
+,avg as (
+	select 
+		t
+		,meters
+		,avg(m) avm
+		,count(*) c 
+	from a 
+	group by t,meters
+)
+,std as (
+	select 
+		a.t,a.meters
+		,avg.avm
+		,sum(abs(avm-m))/count(*) dif
+		,c
+	from a,avg 
+	where a.t=avg.t and a.meters=avg.meters 
+	group by a.t,a.meters
+)
+select * from std
+;
+
+--上名率
+DROP TABLE IF EXISTS B_PreProcess.h_t3; CREATE TABLE B_PreProcess.h_t3 AS 
+WITH 
+a as (select h,meters,count(*) a from Raw group by h,meters)
+,c as (select h,meters,count(*) c from Raw where o &lt;=4 group by h,meters)
+select a.h,a.meters,c*1.0/a a from a,c where a.h=c.h and a.meters=c.meters
+;
+DROP TABLE IF EXISTS B_PreProcess.r_t3; CREATE TABLE B_PreProcess.r_t3 AS 
+WITH 
+a as (select r,meters,count(*) a from Raw group by r,meters)
+,c as (select r,meters,count(*) c from Raw where o &lt;=4 group by r,meters)
+select a.r,a.meters,c*1.0/a a from a,c where a.r=c.r and a.meters=c.meters
+;
+DROP TABLE IF EXISTS B_PreProcess.t_t3; CREATE TABLE B_PreProcess.t_t3 AS 
+WITH 
+a as (select t,meters,count(*) a from Raw group by t,meters)
+,c as (select t,meters,count(*) c from Raw where o &lt;=4 group by t,meters)
+select a.t,a.meters,c*1.0/a a from a,c where a.t=c.t and a.meters=c.meters
+;
+
+
+-- Prevent no records
+DROP TABLE IF EXISTS D_Formula.preventnull;
+CREATE TABLE D_Formula.preventnull as 
+	select 
+		dt,raceno,meter
+		,(select avg(b.avm) from B_PreProcess.h b where b.avm&gt;0 and a.meter=b.meters) ahavo
+		,(select avg(b.avm) from B_PreProcess.r b where b.avm&gt;0 and a.meter=b.meters) aravo
+		,(select avg(b.avm) from B_PreProcess.t b where b.avm&gt;0 and a.meter=b.meters) atavo
+		,(select avg(b.avm) from B_PreProcess.wb b where b.avm&gt;0) wb
+		,(select avg(b.avm) from B_PreProcess.rw b where b.avm&gt;0 and a.meter=b.meters) rw
+		,(select avg(b.avm) from B_PreProcess.rww b where b.avm&gt;0 and a.meter=b.meters) rww
+		,(select avg(b.avm) from B_PreProcess.p b where b.avm&gt;0 and a.meter=b.meters) p
+		
+		,(select avg(b.dif) from B_PreProcess.h b where b.avm&gt;0 and a.meter=b.meters) ahavo_e
+		,(select avg(b.dif) from B_PreProcess.r b where b.avm&gt;0 and a.meter=b.meters) aravo_e
+		,(select avg(b.dif) from B_PreProcess.t b where b.avm&gt;0 and a.meter=b.meters) atavo_e
+		,(select avg(b.dif) from B_PreProcess.wb b where b.avm&gt;0) wb_e
+		,(select avg(b.dif) from B_PreProcess.rw b where b.avm&gt;0 and a.meter=b.meters) rw_e
+		,(select avg(b.dif) from B_PreProcess.rww b where b.avm&gt;0 and a.meter=b.meters) rww_e
+		,(select avg(b.dif) from B_PreProcess.p b where b.avm&gt;0 and a.meter=b.meters) p_e
+	from Rand a
+	group by dt,raceno,meter
+;
+
+-- calculation begin - data preprocess
+DROP TABLE IF EXISTS D_Formula.result1;
+CREATE TABLE D_Formula.result1 as 
+select 
+	Rand.dt,
+	Rand.meter,
+	(Rand.raceno+0)*1.0 raceno
+	,Rand.h,Rand.r,Rand.t
+	,ifnull((select avm from B_PreProcess.h where h.h like '%'||Rand.h||'%' and h.meters&lt;=Rand.meter order by h.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.h where h.h like '%'||Rand.h||'%' and h.meters&gt;Rand.meter order by h.meters asc limit 1),
+			ahavo
+		)
+	) havo
+	,ifnull((select avm from B_PreProcess.r where r.r like '%'||Rand.r||'%' and r.meters&lt;=B_PreProcess.Rand.meter order by r.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.r where r.r like '%'||Rand.r||'%' and r.meters&gt;B_PreProcess.Rand.meter order by r.meters asc limit 1),
+			aravo
+		)
+	) ravo
+	,ifnull((select avm from B_PreProcess.t where t.t like '%'||Rand.t||'%' and t.meters&lt;=Rand.meter order by t.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.t where t.t like '%'||Rand.t||'%' and t.meters&gt;Rand.meter order by t.meters asc limit 1),
+			atavo
+		)
+	) tavo
+	,ifnull((select avm from B_PreProcess.wb where wb.wb&lt;=Rand.wb and wb.meters&lt;=Rand.meter order by wb.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.wb where wb.wb&gt;Rand.wb and wb.meters&gt;Rand.meter order by wb.meters asc limit 1),
+			preventnull.wb
+		)
+	) wb
+	,ifnull((select avm from B_PreProcess.rw where rw.rw=Rand.rw and rw.meters&lt;=Rand.meter order by rw.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.rw where rw.rw=Rand.rw and rw.meters&gt;Rand.meter order by rw.meters asc limit 1),
+			preventnull.rw
+		)
+	) rw
+	,ifnull((select avm from B_PreProcess.p where p.p=Rand.p and p.meters&lt;=Rand.meter order by p.meters desc limit 1),
+		ifnull((select avm from B_PreProcess.p where p.p=Rand.p and p.meters&gt;Rand.meter order by p.meters asc limit 1),
+			preventnull.p
+		)
+	) p
+	
+	
+	,1-ifnull((select dif from B_PreProcess.h where h.h like '%'||Rand.h||'%' and h.meters&lt;=Rand.meter order by h.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.h where h.h like '%'||Rand.h||'%' and h.meters&gt;Rand.meter order by h.meters asc limit 1),
+			ahavo_e
+		)
+	) havo_e
+	,1-ifnull((select dif from B_PreProcess.r where r.r like '%'||Rand.r||'%' and r.meters&lt;=Rand.meter order by r.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.r where r.r like '%'||Rand.r||'%' and r.meters&gt;Rand.meter order by r.meters asc limit 1),
+			aravo_e
+		)
+	) ravo_e
+	,1-ifnull((select dif from B_PreProcess.t where t.t like '%'||Rand.t||'%' and t.meters&lt;=Rand.meter order by t.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.t where t.t like '%'||Rand.t||'%' and t.meters&gt;Rand.meter order by t.meters asc limit 1),
+			atavo_e
+		)
+	) tavo_e
+	,1-ifnull((select dif from B_PreProcess.wb where wb.wb&gt;=Rand.wb and wb.meters&lt;=Rand.meter order by wb.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.wb where wb.wb&lt;=Rand.wb and wb.meters&gt;Rand.meter order by wb.meters asc limit 1),
+			wb_e
+		)
+	) wb_e
+	,1-ifnull((select dif from B_PreProcess.rw where rw.rw=Rand.rw and rw.meters&lt;=Rand.meter order by rw.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.rw where rw.rw=Rand.rw and rw.meters&gt;Rand.meter order by rw.meters asc limit 1),
+			rw_e
+		)
+	) rw_e
+	,1-ifnull((select dif from B_PreProcess.p where p.p=Rand.p and p.meters&lt;=Rand.meter order by p.meters desc limit 1),
+		ifnull((select dif from B_PreProcess.p where p.p=Rand.p and p.meters&gt;Rand.meter order by p.meters asc limit 1),
+			p_e
+		)
+	) p_e
+	
+	
+	
+	,ifnull((select a from B_PreProcess.h_t3 where h_t3.h=Rand.h and h_t3.meters&lt;=Rand.meter order by h_t3.meters desc limit 1),
+		ifnull((select a from B_PreProcess.h_t3 where h_t3.h=Rand.h and h_t3.meters&gt;Rand.meter order by h_t3.meters asc limit 1),
+			0
+		)
+	) h3t
+	,ifnull((select a from B_PreProcess.r_t3 where r_t3.r=Rand.r and r_t3.meters&lt;=Rand.meter order by r_t3.meters desc limit 1),
+		ifnull((select a from B_PreProcess.r_t3 where r_t3.r=Rand.r and r_t3.meters&gt;Rand.meter order by r_t3.meters asc limit 1),
+			0
+		)
+	) r3t
+	,ifnull((select a from B_PreProcess.t_t3 where t_t3.t=Rand.h and t_t3.meters&lt;=Rand.meter order by t_t3.meters desc limit 1),
+		ifnull((select a from B_PreProcess.t_t3 where t_t3.t=Rand.t and t_t3.meters&gt;Rand.meter order by t_t3.meters asc limit 1),
+			0
+		)
+	) t3t
+from 
+	B_PreProcess.Rand,D_Formula.preventnull
+where Rand.dt=preventnull.dt and Rand.raceno=preventnull.raceno
+group by Rand.dt,Rand.raceno,Rand.h
+;
+
+-- normalization
+DROP TABLE IF EXISTS D_Formula.result2;
+CREATE TABLE D_Formula.result2 as 
+with
+a as (
+	select 
+		*
+		,(havo_e+ravo_e+tavo_e) sum_t3_e
+		,(havo_e+ravo_e+tavo_e
+		--+wb_e
+		+rw_e+p_e) sum_e
+	from D_Formula.result1
+)
+select 
+	*
+	,h3t/sum_t3_e havo_t3_er
+	,r3t/sum_t3_e ravo_t3_er
+	,t3t/sum_t3_e tavo_t3_er
+	,havo_e/sum_e havo_er
+	,ravo_e/sum_e ravo_er
+	,tavo_e/sum_e tavo_er
+	--,wb_e/sum_e wb_er
+	,rw_e/sum_e rw_er
+	,p_e/sum_e p_er
+from a
+;
+
+-- naming and translation
+DROP TABLE IF EXISTS D_Formula.result3;
+CREATE TABLE D_Formula.result3 as 
+	select 
+		dt 日期,
+		raceno 埸次,
+		meter 路程,
+		h 馬,
+		r 騎師,
+		t 訓練師,
+		result2.havo*havo_er 馬勝率,
+		result2.ravo*ravo_er 騎師勝率,
+		result2.tavo*tavo_er 訓練師勝率,
+		-- result2.p*p_er 排位勝率,
+		result2.rw*rw_er 馬負磅勝率, -- case when rw=0 then 0.1 else rw end
+		-- result2.wb*wb_er 賠率勝率, -- case when wb=0 then 0.1 else wb end
+		result2.h3t*havo_t3_er 馬上名率,
+		result2.r3t*ravo_t3_er 騎師上名率,
+		result2.t3t*tavo_t3_er 訓練師上名率
+	from D_Formula.result2
+;
+
+-- second integrate various kinds of rate
+DROP TABLE IF EXISTS D_Formula.result4;
+CREATE TABLE D_Formula.result4 as 
+select
+	日期,埸次,
+	路程,
+	馬,
+	騎師,
+	訓練師,
+	(馬勝率+騎師勝率+訓練師勝率
+	-- +排位勝率
+	+馬負磅勝率) 綜合勝率,
+	(馬上名率+騎師上名率+訓練師上名率) 上名率
+from D_Formula.result3
+-- where 埸次 in (4,5,6)
+order by 日期 desc,埸次 asc,綜合勝率 desc;
+
+-- ranking sorting and indication
+DROP TABLE IF EXISTS D_Formula.result5F3_4;
+CREATE TABLE D_Formula.result5F3_4 as 
+select
+	日期,埸次
+	,路程
+	,馬
+	,騎師
+	,訓練師
+	,round(綜合勝率,4) 綜合勝率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 綜合勝率 desc)) 綜合勝率排名
+	,round(上名率,4) 上名率,(ROW_NUMBER () OVER (Partition by 日期,埸次 ORDER BY 上名率 desc)) 上名率排名
+	,round(dif,2) dif
+from D_Formula.result4,(
+	with 
+		hh as (select meters,avg(1-dif) dif from h group by meters),
+		rr as (select meters,avg(1-dif) dif from r group by meters),
+		tt as (select meters,avg(1-dif) dif from t group by meters),
+		r1 as (select hh.meters,(hh.dif+rr.dif+tt.dif)/3 dif,hh.dif h,rr.dif r,tt.dif t from hh,rr,tt where hh.meters=rr.meters and tt.meters=rr.meters),
+		h1 as (select max(dif) maxdif,min(dif) mindif from r1),
+		rr1 as (select meters,1-(dif-mindif)/(maxdif-mindif) wr from r1,h1)
+		select * from r1
+) e_diff
+where e_diff.meters=路程
+order by 日期 desc,埸次 asc,綜合勝率 desc;
+
+DROP TABLE IF EXISTS D_Formula.result6F3_4;
+CREATE TABLE D_Formula.result6F3_4 as 
+select * from D_Formula.result5F3_4 where dif in (
+	select dif from D_Formula.result5F3_4 group by 日期,埸次 order by dif desc limit 2
+)
+;
+
+commit;</sql><current_tab id="2"/></tab_sql></sqlb_project>
